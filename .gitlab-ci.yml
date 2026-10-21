@@ -1,0 +1,12 @@
+stages:
+  - dev
+
+execute_dev:
+  stage: dev
+  tags:
+    - php8_175
+  only:
+    - dev
+  script:
+    - chmod +x ./ci/homolog.sh
+    - ./ci/homolog.sh

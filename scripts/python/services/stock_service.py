@@ -65,6 +65,8 @@ def fetch_quote(ticker: str) -> dict:
         "avg_volume": info.get("averageVolume"),
         "market_cap": info.get("marketCap"),
         "dividend_yield": info.get("dividendYield"),
+        "ultimo_dividendo": info.get("lastDividendValue"),
+        "ultimo_dividendo_data": info.get("lastDividendDate"),  # timestamp Unix (segundos)
         "trailing_pe": info.get("trailingPE"),
     }
 

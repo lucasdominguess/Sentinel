@@ -8,6 +8,8 @@ Mantém todo o SQL isolado aqui. Cada ativo é gravado em sua própria
 transação: se um falhar, os demais continuam.
 """
 
+from datetime import datetime
+
 from config.logging_config import setup_logging
 from database.connection import get_connection
 
@@ -17,6 +19,16 @@ logger = setup_logging("repository")
 def _to_int(value):
     """Converte para int (colunas de volume são bigint). None continua None."""
     return int(value) if value is not None else None
+
+
+def _ts_to_date(ts):
+    """Converte timestamp Unix (segundos) em date; None se vazio/inválido."""
+    if not ts:
+        return None
+    try:
+        return datetime.fromtimestamp(ts).date()
+    except (ValueError, OSError, TypeError, OverflowError):
+        return None
 
 
 # acoes: cria pelo ticker ou atualiza o metadado; devolve o id.
@@ -41,14 +53,14 @@ _INSERT_COTACAO = """
         minima_dia, maxima_dia, variacao_dia_pct,
         minima_52s, maxima_52s,
         volume, volume_medio, valor_mercado,
-        dividend_yield, preco_lucro, estado_mercado,
+        dividend_yield, ultimo_dividendo, ultimo_dividendo_data, preco_lucro, estado_mercado,
         capturado_em, created_at, updated_at
     ) VALUES (
         %(acao_id)s, %(preco)s, %(fechamento_anterior)s, %(abertura)s,
         %(minima_dia)s, %(maxima_dia)s, %(variacao_dia_pct)s,
         %(minima_52s)s, %(maxima_52s)s,
         %(volume)s, %(volume_medio)s, %(valor_mercado)s,
-        %(dividend_yield)s, %(preco_lucro)s, %(estado_mercado)s,
+        %(dividend_yield)s, %(ultimo_dividendo)s, %(ultimo_dividendo_data)s, %(preco_lucro)s, %(estado_mercado)s,
         now(), now(), now()
     );
 """
@@ -106,6 +118,8 @@ def salvar_cotacoes(quotes: list[dict], tipo: str = "acao") -> int:
                         "volume_medio": _to_int(quote.get("avg_volume")),
                         "valor_mercado": quote.get("market_cap"),
                         "dividend_yield": quote.get("dividend_yield"),
+                        "ultimo_dividendo": quote.get("ultimo_dividendo"),
+                        "ultimo_dividendo_data": _ts_to_date(quote.get("ultimo_dividendo_data")),
                         "preco_lucro": quote.get("trailing_pe"),
                         "estado_mercado": quote.get("market_state"),
                     })

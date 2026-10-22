@@ -1,0 +1,168 @@
+/* acoes-index.css — visuais exclusivos da tela de listagem de ações */
+
+.page-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.page-head h1 {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.search {
+    width: 320px;
+    max-width: 100%;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.sort-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.pill {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.pill:hover {
+    background: var(--surface-2);
+    color: var(--text);
+}
+
+.pill.is-active {
+    background: var(--primary);
+    color: var(--primary-contrast);
+    border-color: var(--primary);
+}
+
+.acoes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 16px;
+}
+
+.acao-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px;
+    transition: transform 0.08s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.acao-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+}
+
+/* o atributo [hidden] sozinho não vence o display:flex do card — reforçamos aqui */
+.acao-card[hidden] {
+    display: none;
+}
+
+.acao-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.acao-card__ticker {
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.3px;
+}
+
+.acao-card__nome {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.acao-card__preco {
+    margin-top: 8px;
+}
+
+.acao-card__preco .valor {
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.acao-card__stats {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px 8px;
+}
+
+.acao-card__stats > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.acao-card__stats .k {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.acao-card__stats .v {
+    font-size: 13.5px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.empty {
+    padding: 40px;
+    text-align: center;
+}
+
+.empty code {
+    background: var(--surface-2);
+    padding: 2px 6px;
+    border-radius: 6px;
+}
+
+.no-results {
+    margin-top: 24px;
+    text-align: center;
+}

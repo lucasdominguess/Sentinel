@@ -25,6 +25,10 @@ use App\Contracts\Services\Siga\SigaProfissionalServiceInterface;
 use App\Services\Siga\SigaPessoaService;
 use App\Services\Siga\SigaProfissionalService;
 
+use App\Contracts\Services\AcaoServiceInterface;
+use App\Services\AcaoService;
+use App\Contracts\Repositories\AcaoRepositoryInterface;
+use App\Repositories\AcaoRepository;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -82,6 +86,14 @@ class AppServiceProvider extends ServiceProvider
                 config('services.siga.sistema'),
             );
         });
+        $this->app->bind(
+            AcaoServiceInterface::class,
+            AcaoService::class
+        );
+        $this->app->bind(
+            AcaoRepositoryInterface::class,
+            AcaoRepository::class
+        );
     }
 
     /**

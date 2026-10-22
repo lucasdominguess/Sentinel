@@ -1,0 +1,182 @@
+/* acoes-calculo.css — calculadora de aportes (quantidade de cotas) */
+
+.calc-card {
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.calc-sub {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 20px 0 8px;
+}
+
+.calc-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.small {
+    font-size: 12.5px;
+}
+
+.calc-aporte {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 320px;
+}
+
+/* ---------- Linha de ativo ---------- */
+.calc-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+    background: var(--surface-2);
+}
+
+.calc-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1 1 120px;
+}
+
+.calc-field--ativo {
+    flex: 2 1 200px;
+}
+
+.calc-field--sm {
+    flex: 0 1 90px;
+}
+
+.calc-aporte input,
+.calc-field input,
+.calc-field select {
+    width: 100%;
+    padding: 9px 11px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 14.5px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.calc-aporte input:focus,
+.calc-field input:focus,
+.calc-field select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+.calc-field input:disabled {
+    background: var(--surface-2);
+    color: var(--text-muted);
+}
+
+.calc-remove {
+    flex: 0 0 auto;
+    color: var(--negative);
+}
+
+/* ---------- Botões ---------- */
+.btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-ghost:hover {
+    background: var(--surface-2);
+    color: var(--text);
+    border-color: var(--primary);
+}
+
+.calc-actions {
+    margin-top: 16px;
+}
+
+.calc-erro {
+    margin-top: 14px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    color: var(--negative);
+    background: var(--negative-bg);
+    border: 1px solid color-mix(in srgb, var(--negative) 35%, transparent);
+    font-size: 14px;
+}
+
+/* ---------- Resultado ---------- */
+.calc-resultado {
+    padding: 24px;
+}
+
+.calc-table-wrap {
+    overflow-x: auto;
+}
+
+.calc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14.5px;
+}
+
+.calc-table th,
+.calc-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Primeira coluna (Ativo) alinhada à esquerda; as numéricas à direita (cabeçalho + valor juntos) */
+.calc-table th:first-child,
+.calc-table td:first-child {
+    text-align: left;
+}
+
+.calc-table thead th {
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--text-muted);
+}
+
+.calc-table .num {
+    font-variant-numeric: tabular-nums;
+}
+
+.calc-table .forte {
+    font-weight: 700;
+}
+
+.calc-table tbody tr:hover {
+    background: var(--surface-2);
+}
+
+.calc-troco {
+    margin-top: 16px;
+    text-align: right;
+    font-size: 15px;
+}
+
+.calc-troco strong {
+    color: var(--positive);
+    font-variant-numeric: tabular-nums;
+}

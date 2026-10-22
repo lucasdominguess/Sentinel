@@ -1,0 +1,84 @@
+/* acoes-adicionar.css — visuais da tela de adicionar ticket */
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.back-link:hover {
+    color: var(--primary);
+}
+
+.form-head {
+    margin-bottom: 20px;
+}
+
+.form-head h1 {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.form-card {
+    max-width: 440px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field__label {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.field input,
+.field select {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field input:focus,
+.field select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+.field__error {
+    font-size: 13px;
+    color: var(--negative);
+}
+
+.form-actions {
+    margin-top: 4px;
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 20px;
+    font-size: 14.5px;
+    max-width: 440px;
+}
+
+.alert--ok {
+    color: var(--positive);
+    background: var(--positive-bg);
+    border: 1px solid color-mix(in srgb, var(--positive) 35%, transparent);
+}

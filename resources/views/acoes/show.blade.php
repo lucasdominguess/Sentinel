@@ -56,6 +56,8 @@
                 <div><dt>Máxima do dia</dt><dd>R$ {{ $fmt($c['maxima_dia']) }}</dd></div>
                 <div><dt>Mínima 52s</dt><dd>R$ {{ $fmt($c['minima_52s']) }}</dd></div>
                 <div><dt>Máxima 52s</dt><dd>R$ {{ $fmt($c['maxima_52s']) }}</dd></div>
+                <div><dt>Mínima do mês</dt><dd>{{ $c['minima_mes'] !== null ? 'R$ ' . $fmt($c['minima_mes']) : '—' }}@if ($c['minima_mes_data']) <span class="muted">({{ \Illuminate\Support\Carbon::parse($c['minima_mes_data'])->format('d/m') }})</span>@endif</dd></div>
+                <div><dt>Máxima do mês</dt><dd>{{ $c['maxima_mes'] !== null ? 'R$ ' . $fmt($c['maxima_mes']) : '—' }}@if ($c['maxima_mes_data']) <span class="muted">({{ \Illuminate\Support\Carbon::parse($c['maxima_mes_data'])->format('d/m') }})</span>@endif</dd></div>
                 <div><dt>Volume</dt><dd>{{ $int($c['volume']) }}</dd></div>
                 <div><dt>Volume médio</dt><dd>{{ $int($c['volume_medio']) }}</dd></div>
                 <div><dt>Valor de mercado</dt><dd>R$ {{ $fmt($c['valor_mercado']) }}</dd></div>

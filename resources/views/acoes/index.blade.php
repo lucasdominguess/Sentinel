@@ -54,7 +54,9 @@
                    data-variacao="{{ $pct ?? '' }}"
                    data-preco="{{ $c ? $c['preco'] : '' }}"
                    data-min-mes="{{ $c ? $c['minima_mes'] : '' }}"
-                   data-max-mes="{{ $c ? $c['maxima_mes'] : '' }}">
+                   data-min-mes-data="{{ $c ? $c['minima_mes_data'] : '' }}"
+                   data-max-mes="{{ $c ? $c['maxima_mes'] : '' }}"
+                   data-max-mes-data="{{ $c ? $c['maxima_mes_data'] : '' }}">
                     <div class="acao-card__top">
                         <span class="acao-card__ticker">{{ $acao['ticker'] }}</span>
                         <span class="acao-card__var">

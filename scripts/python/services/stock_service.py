@@ -24,11 +24,16 @@ def _min_max_mes(yf_ticker):
     try:
         hist = yf_ticker.history(start=inicio_mes)
         if hist.empty:
-            return None, None
-        return float(hist["Low"].min()), float(hist["High"].max())
+            return None, None, None, None
+        return (
+            float(hist["Low"].min()),
+            hist["Low"].idxmin().date(),
+            float(hist["High"].max()),
+            hist["High"].idxmax().date(),
+        )
     except Exception as e:
         logger.error("Erro ao calcular mín/máx do mês: %s", e)
-        return None, None
+        return None, None, None, None
 
 
 def _none_if_zero(value):
@@ -75,7 +80,7 @@ def fetch_quote(ticker: str) -> dict:
 
     price = info.get("currentPrice") or info.get("regularMarketPrice")
     previous_close = info.get("previousClose")
-    minima_mes, maxima_mes = _min_max_mes(yf_ticker)
+    minima_mes, minima_mes_data, maxima_mes, maxima_mes_data = _min_max_mes(yf_ticker)
 
     return {
         "ticker": info.get("symbol", ticker),
@@ -94,7 +99,9 @@ def fetch_quote(ticker: str) -> dict:
         "week52_low": info.get("fiftyTwoWeekLow"),
         "week52_high": info.get("fiftyTwoWeekHigh"),
         "minima_mes": minima_mes,
+        "minima_mes_data": minima_mes_data,
         "maxima_mes": maxima_mes,
+        "maxima_mes_data": maxima_mes_data,
         "volume": info.get("volume") or info.get("regularMarketVolume"),
         "avg_volume": info.get("averageVolume"),
         "market_cap": info.get("marketCap"),

@@ -50,15 +50,15 @@ _UPSERT_ACAO = """
 _INSERT_COTACAO = """
     INSERT INTO cotacoes (
         acao_id, preco, fechamento_anterior, abertura,
-        minima_dia, maxima_dia, variacao_dia_pct,
-        minima_52s, maxima_52s,
+        minima_dia, maxima_dia, variacao_dia_pct, variacao_dia,
+        minima_52s, maxima_52s, minima_mes, maxima_mes,
         volume, volume_medio, valor_mercado,
         dividend_yield, ultimo_dividendo, ultimo_dividendo_data, preco_lucro, estado_mercado,
         capturado_em, created_at, updated_at
     ) VALUES (
         %(acao_id)s, %(preco)s, %(fechamento_anterior)s, %(abertura)s,
-        %(minima_dia)s, %(maxima_dia)s, %(variacao_dia_pct)s,
-        %(minima_52s)s, %(maxima_52s)s,
+        %(minima_dia)s, %(maxima_dia)s, %(variacao_dia_pct)s, %(variacao_dia)s,
+        %(minima_52s)s, %(maxima_52s)s, %(minima_mes)s, %(maxima_mes)s,
         %(volume)s, %(volume_medio)s, %(valor_mercado)s,
         %(dividend_yield)s, %(ultimo_dividendo)s, %(ultimo_dividendo_data)s, %(preco_lucro)s, %(estado_mercado)s,
         now(), now(), now()
@@ -112,8 +112,11 @@ def salvar_cotacoes(quotes: list[dict], tipo: str = "acao") -> int:
                         "minima_dia": quote.get("day_low"),
                         "maxima_dia": quote.get("day_high"),
                         "variacao_dia_pct": quote.get("change_percent"),
+                        "variacao_dia": quote.get("change_abs"),
                         "minima_52s": quote.get("week52_low"),
                         "maxima_52s": quote.get("week52_high"),
+                        "minima_mes": quote.get("minima_mes"),
+                        "maxima_mes": quote.get("maxima_mes"),
                         "volume": _to_int(quote.get("volume")),
                         "volume_medio": _to_int(quote.get("avg_volume")),
                         "valor_mercado": quote.get("market_cap"),

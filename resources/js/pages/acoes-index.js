@@ -50,4 +50,60 @@ if (grid) {
             if (semResultados) semResultados.hidden = visiveis !== 0;
         });
     }
+
+    // --- Tooltip de mín/máx do mês: aparece após 1s de hover sobre o card ---
+    const tooltip = document.createElement('div');
+    tooltip.className = 'card-tooltip';
+    document.body.appendChild(tooltip);
+
+    const brl = (v) => {
+        const n = parseFloat(v);
+        return Number.isNaN(n) ? '—' : n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    };
+
+    let hoverTimer = null;
+    let lastEvent = null;
+
+    const posicionar = (e) => {
+        const pad = 14;
+        const r = tooltip.getBoundingClientRect();
+        let x = e.clientX + pad;
+        let y = e.clientY + pad;
+        if (x + r.width > window.innerWidth) x = e.clientX - r.width - pad;
+        if (y + r.height > window.innerHeight) y = e.clientY - r.height - pad;
+        tooltip.style.left = `${x}px`;
+        tooltip.style.top = `${y}px`;
+    };
+
+    const mostrar = (card) => {
+        const min = card.dataset.minMes;
+        const max = card.dataset.maxMes;
+        if (!min && !max) {
+            tooltip.innerHTML = '<span class="tt-empty">Sem histórico do mês</span>';
+        } else {
+            tooltip.innerHTML =
+                '<div class="tt-title">No mês</div>' +
+                `<div class="tt-row"><span>Mínima</span><strong>${brl(min)}</strong></div>` +
+                `<div class="tt-row"><span>Máxima</span><strong>${brl(max)}</strong></div>`;
+        }
+        tooltip.classList.add('show');
+        if (lastEvent) posicionar(lastEvent);
+    };
+
+    const esconder = () => {
+        clearTimeout(hoverTimer);
+        tooltip.classList.remove('show');
+    };
+
+    cards.forEach((card) => {
+        card.addEventListener('mouseenter', (e) => {
+            lastEvent = e;
+            hoverTimer = setTimeout(() => mostrar(card), 1000);
+        });
+        card.addEventListener('mousemove', (e) => {
+            lastEvent = e;
+            if (tooltip.classList.contains('show')) posicionar(e);
+        });
+        card.addEventListener('mouseleave', esconder);
+    });
 }

@@ -233,6 +233,14 @@
     font-variant-numeric: tabular-nums;
 }
 
+.card-tooltip .tt-row em {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-left: 3px;
+}
+
 .card-tooltip .tt-empty {
     color: var(--text-muted);
 }

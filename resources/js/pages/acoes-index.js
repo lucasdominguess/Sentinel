@@ -61,6 +61,12 @@ if (grid) {
         return Number.isNaN(n) ? '—' : n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     };
 
+    const fmtData = (iso) => {
+        if (!iso) return '';
+        const [, m, d] = iso.split('-');
+        return d && m ? `${d}/${m}` : '';
+    };
+
     let hoverTimer = null;
     let lastEvent = null;
 
@@ -78,13 +84,15 @@ if (grid) {
     const mostrar = (card) => {
         const min = card.dataset.minMes;
         const max = card.dataset.maxMes;
+        const dMin = fmtData(card.dataset.minMesData);
+        const dMax = fmtData(card.dataset.maxMesData);
         if (!min && !max) {
             tooltip.innerHTML = '<span class="tt-empty">Sem histórico do mês</span>';
         } else {
             tooltip.innerHTML =
                 '<div class="tt-title">No mês</div>' +
-                `<div class="tt-row"><span>Mínima</span><strong>${brl(min)}</strong></div>` +
-                `<div class="tt-row"><span>Máxima</span><strong>${brl(max)}</strong></div>`;
+                `<div class="tt-row"><span>Mínima</span><strong>${brl(min)}${dMin ? ` <em>${dMin}</em>` : ''}</strong></div>` +
+                `<div class="tt-row"><span>Máxima</span><strong>${brl(max)}${dMax ? ` <em>${dMax}</em>` : ''}</strong></div>`;
         }
         tooltip.classList.add('show');
         if (lastEvent) posicionar(lastEvent);

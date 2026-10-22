@@ -12,7 +12,7 @@ Execução:
 import sys
 
 from config.logging_config import setup_logging
-from config.settings import TICKERS
+from config.settings import TICKERS_SEED
 from database.repository import listar_tickers_ativos, salvar_cotacoes
 from services.stock_service import fetch_all
 
@@ -62,36 +62,50 @@ def _opt(args: list[str], name: str, default=None):
     return default
 
 
+def _processar(tickers: list[str], tipo: str, salvar: bool) -> tuple[int, int]:
+    """Busca os tickers, imprime e (opcionalmente) grava. Retorna (ok, total)."""
+    quotes = fetch_all(tickers)
+    for quote in quotes:
+        print_quote(quote)
+    if salvar:
+        inseridas = salvar_cotacoes(quotes, tipo=tipo)
+        logger.info("Gravadas %d cotação(ões) [tipo=%s].", inseridas, tipo)
+    return len(quotes), len(tickers)
+
+
 def main() -> None:
     args = sys.argv[1:]
     salvar = "--no-save" not in args
     tipo = _opt(args, "--tipo", "acao")
     tickers_cli = [a for a in args if not a.startswith("--")]
 
-    if tickers_cli:
-        # modo "ticker específico" (ex.: fetch_stocks.py VALE3.SA --tipo=fii)
-        tickers = tickers_cli
-    else:
-        # modo padrão: lê os ativos marcados como ativos no banco
-        tickers = listar_tickers_ativos()
-        if not tickers:
-            logger.warning("Nenhum ticker ativo no banco; usando a lista de settings.py como semente.")
-            tickers = TICKERS
-
-    logger.info("Buscando %d ativo(s)...", len(tickers))
-    quotes = fetch_all(tickers)
-
     print()
-    for quote in quotes:
-        print_quote(quote)
 
-    if salvar:
-        inseridas = salvar_cotacoes(quotes, tipo=tipo)
-        logger.info("Gravadas %d cotação(ões) no banco.", inseridas)
-    else:
-        logger.info("Modo --no-save: nada foi gravado no banco.")
+    # 1) Tickers específicos na linha de comando (ex.: fetch_stocks.py VALE3.SA --tipo=fii)
+    if tickers_cli:
+        logger.info("Buscando %d ativo(s) informado(s)...", len(tickers_cli))
+        ok, total = _processar(tickers_cli, tipo, salvar)
+        logger.info("Concluído: %d de %d ativo(s).", ok, total)
+        return
 
-    logger.info("Concluído: %d de %d ativo(s) retornaram dados.", len(quotes), len(tickers))
+    # 2) Fonte de verdade: ativos marcados como ativos no banco
+    ativos = listar_tickers_ativos()
+    if ativos:
+        logger.info("Buscando %d ativo(s) do banco...", len(ativos))
+        # o tipo é preservado no upsert (ON CONFLICT não altera tipo/ativo)
+        ok, total = _processar(ativos, tipo, salvar)
+        logger.info("Concluído: %d de %d ativo(s).", ok, total)
+        return
+
+    # 3) Banco vazio → semente inicial, inserindo cada grupo com o tipo correto
+    logger.warning("Nenhum ticker ativo no banco; usando a semente de settings.py (por tipo).")
+    total_ok = total_geral = 0
+    for tipo_seed, lista in TICKERS_SEED.items():
+        logger.info("Semente: %d %s(s)...", len(lista), tipo_seed)
+        ok, total = _processar(lista, tipo_seed, salvar)
+        total_ok += ok
+        total_geral += total
+    logger.info("Semente concluída: %d de %d ativo(s).", total_ok, total_geral)
 
 
 if __name__ == "__main__":

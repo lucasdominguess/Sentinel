@@ -47,39 +47,28 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 # ----------------------------------------------------------------------
-# Ativos monitorados
+# Semente inicial (seed)
 # ----------------------------------------------------------------------
-TICKERS = [
-    "ALPA3.SA",
-    "ANIM3.SA",
-    "AXIA3.SA",
-    "B3SA3.SA",
-    "BBSE3.SA",
-    "BMGB4.SA",
-    "CMIG4.SA",
-    "COGN3.SA",
-    "CPLE3.SA",
-    "CSNA3.SA",
-    "CXSE3.SA",
-    "EGIE3.SA",
-    "ENGI4.SA",
-    "FESA4.SA",
-    "GRND3.SA",
-    "ITSA4.SA",
-    "JSLG3.SA",
-    "LAVV3.SA",
-    "MDNE3.SA",
-    "MELK3.SA",
-    "MGLU3.SA",
-    "MRVE3.SA",
-    "MTRE3.SA",
-    "PGMN3.SA",
-    "POMO3.SA",
-    "POMO4.SA",
-    "RAIL3.SA",
-    "RECV3.SA",
-    "RDOR3.SA",
-    "SAPR4.SA",
-    "VAMO3.SA",
-    "BHIA3.SA"
-]
+# Usada SOMENTE quando não há tickers ativos no banco (primeira carga numa
+# instalação nova). Agrupada por tipo para que o seed já entre na categoria
+# correta (acao / fii / etf). Depois disso, a fonte de verdade é a tabela "acoes".
+# Para incluir um ativo no start inicial, adicione-o no grupo do tipo certo.
+TICKERS_SEED = {
+    "acao": [
+        "ALPA3.SA", "ANIM3.SA", "AXIA3.SA", "B3SA3.SA", "BBSE3.SA", "BHIA3.SA",
+        "BMGB4.SA", "CMIG4.SA", "COGN3.SA", "CPLE3.SA", "CSNA3.SA", "CXSE3.SA",
+        "EGIE3.SA", "ENGI4.SA", "FESA4.SA", "GRND3.SA", "ITSA4.SA", "JSLG3.SA",
+        "LAVV3.SA", "MDNE3.SA", "MELK3.SA", "MGLU3.SA", "MRVE3.SA", "MTRE3.SA",
+        "PGMN3.SA", "POMO3.SA", "POMO4.SA", "RAIL3.SA", "RDOR3.SA", "RECV3.SA",
+        "SAPR4.SA", "VALE3.SA", "VAMO3.SA",
+    ],
+    "fii": [
+        "GGRC11.SA", "HGLG11.SA", "VGIR11.SA", "VGRI11.SA",
+    ],
+    "etf": [
+        "BOVA11.SA", "DIVO11.SA",
+    ],
+}
+
+# Lista achatada (compatibilidade: usos que só precisam dos tickers, sem o tipo)
+TICKERS = [ticker for grupo in TICKERS_SEED.values() for ticker in grupo]

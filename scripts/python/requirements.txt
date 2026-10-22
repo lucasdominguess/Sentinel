@@ -1,0 +1,8 @@
+# Dependências do coletor Python (Sentinel)
+# v1 (busca + print) precisa apenas de: yfinance, python-dotenv
+# As demais já ficam listadas para as próximas etapas (banco e Telegram).
+
+yfinance>=0.2.61
+python-dotenv>=1.1.0
+psycopg2-binary>=2.9.9     # conexão com o PostgreSQL (database/connection.py)
+pyTelegramBotAPI>=4.24.0   # bot do Telegram (services/telegram_bot.py)

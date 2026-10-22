@@ -5,11 +5,30 @@ relevantes para análise. Não imprime nem grava nada — quem decide o que
 fazer com o resultado é o script de entrada (fetch_stocks.py).
 """
 
+from datetime import datetime
+
 import yfinance as yf
 
 from config.logging_config import setup_logging
 
 logger = setup_logging("stock_service")
+
+
+def _min_max_mes(yf_ticker):
+    """Mínimo (Low) e máximo (High) do mês atual, calculados do histórico.
+
+    O info do yfinance não traz mín/máx mensal (só dia e 52 semanas), então
+    buscamos o histórico do mês e tiramos os extremos. 1 requisição extra.
+    """
+    inicio_mes = datetime.now().replace(day=1).strftime("%Y-%m-%d")
+    try:
+        hist = yf_ticker.history(start=inicio_mes)
+        if hist.empty:
+            return None, None
+        return float(hist["Low"].min()), float(hist["High"].max())
+    except Exception as e:
+        logger.error("Erro ao calcular mín/máx do mês: %s", e)
+        return None, None
 
 
 def _none_if_zero(value):
@@ -35,16 +54,28 @@ def _change_percent(info: dict, price, previous_close):
     return None
 
 
+def _change_abs(info: dict, price, previous_close):
+    """Variação do dia em R$ (regularMarketChange), com fallback preço - fech. anterior."""
+    change = info.get("regularMarketChange")
+    if change is not None:
+        return change
+    if price is not None and previous_close is not None:
+        return price - previous_close
+    return None
+
+
 def fetch_quote(ticker: str) -> dict:
     """Busca os dados de um ativo e retorna um dicionário com os campos-chave.
 
     Usa `info.get(...)` em tudo para não quebrar quando um campo não vier.
     As chaves seguem o guia docs/REFERENCIA_YFINANCE_INFO.md.
     """
-    info = yf.Ticker(ticker).info
+    yf_ticker = yf.Ticker(ticker)
+    info = yf_ticker.info
 
     price = info.get("currentPrice") or info.get("regularMarketPrice")
     previous_close = info.get("previousClose")
+    minima_mes, maxima_mes = _min_max_mes(yf_ticker)
 
     return {
         "ticker": info.get("symbol", ticker),
@@ -59,8 +90,11 @@ def fetch_quote(ticker: str) -> dict:
         "day_low": _none_if_zero(info.get("dayLow")),
         "day_high": _none_if_zero(info.get("dayHigh")),
         "change_percent": _change_percent(info, price, previous_close),
+        "change_abs": _change_abs(info, price, previous_close),
         "week52_low": info.get("fiftyTwoWeekLow"),
         "week52_high": info.get("fiftyTwoWeekHigh"),
+        "minima_mes": minima_mes,
+        "maxima_mes": maxima_mes,
         "volume": info.get("volume") or info.get("regularMarketVolume"),
         "avg_volume": info.get("averageVolume"),
         "market_cap": info.get("marketCap"),

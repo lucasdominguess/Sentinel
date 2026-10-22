@@ -43,6 +43,7 @@
                     $pct = isset($c['variacao_dia_pct']) ? (float) $c['variacao_dia_pct'] : null;
                     $cls = $pct === null ? 'badge--flat' : ($pct > 0 ? 'badge--up' : ($pct < 0 ? 'badge--down' : 'badge--flat'));
                     $arrow = $pct === null ? '' : ($pct > 0 ? '▲' : ($pct < 0 ? '▼' : '•'));
+                    $varRs = isset($c['variacao_dia']) ? (float) $c['variacao_dia'] : null;
                     $fmt = fn($v) => $v === null ? '—' : number_format((float) $v, 2, ',', '.');
                     // 0/null = sem dado (ex.: coleta pré-pregão) → exibe "—"
                     $stat = fn($v) => $v === null || (float) $v == 0.0 ? '—' : 'R$ ' . number_format((float) $v, 2, ',', '.');
@@ -51,10 +52,17 @@
                    href="{{ route('painel.show', $acao['id']) }}"
                    data-search="{{ mb_strtolower($acao['ticker'] . ' ' . ($acao['nome'] ?? '')) }}"
                    data-variacao="{{ $pct ?? '' }}"
-                   data-preco="{{ $c ? $c['preco'] : '' }}">
+                   data-preco="{{ $c ? $c['preco'] : '' }}"
+                   data-min-mes="{{ $c ? $c['minima_mes'] : '' }}"
+                   data-max-mes="{{ $c ? $c['maxima_mes'] : '' }}">
                     <div class="acao-card__top">
                         <span class="acao-card__ticker">{{ $acao['ticker'] }}</span>
-                        <span class="badge {{ $cls }}">{{ $arrow }} {{ $pct !== null ? $fmt($pct) . '%' : '—' }}</span>
+                        <span class="acao-card__var">
+                            <span class="badge {{ $cls }}">{{ $arrow }} {{ $pct !== null ? $fmt($pct) . '%' : '—' }}</span>
+                            @if ($varRs !== null)
+                                <span class="var-rs {{ $varRs > 0 ? 'up' : ($varRs < 0 ? 'down' : '') }}">{{ $varRs > 0 ? '+' : ($varRs < 0 ? '−' : '') }}R$ {{ number_format(abs($varRs), 2, ',', '.') }}</span>
+                            @endif
+                        </span>
                     </div>
                     <div class="acao-card__nome">{{ $acao['nome'] ?? '—' }}</div>
                     <div class="acao-card__preco">

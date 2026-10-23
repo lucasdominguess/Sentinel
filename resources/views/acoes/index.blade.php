@@ -25,6 +25,7 @@
                 <button type="button" class="pill is-active" data-sort="alta">Maior alta %</button>
                 <button type="button" class="pill" data-sort="queda">Maior queda %</button>
                 <button type="button" class="pill" data-sort="valor">Maior valor</button>
+                <button type="button" class="pill" data-sort="menor">Menor valor</button>
             </div>
             <input id="busca" class="search" type="search" placeholder="Filtrar por ticker ou nome…" autocomplete="off">
         </div>

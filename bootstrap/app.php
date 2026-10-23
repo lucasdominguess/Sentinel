@@ -27,13 +27,16 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->render(function (ValidationException $exception): JsonResponse {
-            $erro = $exception->validator->errors()->all();
+        $exceptions->render(function (ValidationException $exception, Request $request): ?JsonResponse {
+            // Só responde JSON para chamadas de API/AJAX; na web volta ao formulário com os erros.
+            if (! $request->expectsJson()) {
+                return null;
+            }
 
             Log::error($exception->getMessage());
             return response()->json([
                 'message' => 'Dados inválidos',
-                'error' => $erro,
+                'error' => $exception->validator->errors()->all(),
             ], 422);
         });
         $exceptions->render(function (LazyLoadingViolationException $exception, Request $request) {
@@ -70,10 +73,15 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return ApiResponse::error($message, $status);
         });
-        $exceptions->render(function (\Throwable $exception): JsonResponse {
+        $exceptions->render(function (\Throwable $exception, Request $request): ?JsonResponse {
             Log::error("Final Exception: " . $exception->getMessage());
             // LOG::channel('telegram')->error("Final Exception: ".$exception->getMessage());
-    
+
+            // Só responde JSON para chamadas de API/AJAX; na web usa a página de erro padrão.
+            if (! $request->expectsJson()) {
+                return null;
+            }
+
             $status = $exception instanceof HttpExceptionInterface
                 ? $exception->getStatusCode()
                 : 500;

@@ -10,7 +10,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 echo "==> 1/6 Atualizando código (git pull)"
-git pull
+git pull origin main
 
 echo "==> 2/6 Dependências PHP (composer install)"
 composer install --no-interaction --prefer-dist

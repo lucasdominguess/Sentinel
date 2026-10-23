@@ -45,6 +45,7 @@
             <li><a href="{{ route('painel.etfs') }}" class="drawer__link {{ request()->routeIs('painel.etfs') ? 'is-active' : '' }}">📊 Monitor de ETFs</a></li>
             <li class="drawer__divider" aria-hidden="true"></li>
             <li><a href="{{ route('painel.calculo') }}" class="drawer__link {{ request()->routeIs('painel.calculo') ? 'is-active' : '' }}">🧮 Cálculo de cotas</a></li>
+            <li><a href="{{ route('painel.porcentagem') }}" class="drawer__link {{ request()->routeIs('painel.porcentagem') ? 'is-active' : '' }}">➗ Cálculo de porcentagem</a></li>
             <li><a href="{{ route('painel.adicionar') }}" class="drawer__link {{ request()->routeIs('painel.adicionar') ? 'is-active' : '' }}">➕ Adicionar ticket</a></li>
         </ul>
     </nav>

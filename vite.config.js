@@ -16,6 +16,8 @@ export default defineConfig({
                 'resources/css/pages/acoes-adicionar.css',
                 'resources/css/pages/acoes-calculo.css',
                 'resources/js/pages/acoes-calculo.js',
+                'resources/css/pages/acoes-porcentagem.css',
+                'resources/js/pages/acoes-porcentagem.js',
             ],
             refresh: true,
         }),

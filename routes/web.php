@@ -8,6 +8,7 @@ Route::get('/fiis', [PainelController::class, 'fiis'])->name('painel.fiis');
 Route::get('/etfs', [PainelController::class, 'etfs'])->name('painel.etfs');
 
 Route::get('/calculo-cotas', [PainelController::class, 'calculoCotas'])->name('painel.calculo');
+Route::get('/porcentagem', [PainelController::class, 'porcentagem'])->name('painel.porcentagem');
 
 Route::get('/adicionar', [PainelController::class, 'formAdicionar'])->name('painel.adicionar');
 Route::post('/adicionar', [PainelController::class, 'adicionar'])->name('painel.adicionar.store');

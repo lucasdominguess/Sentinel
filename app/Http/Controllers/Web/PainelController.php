@@ -60,6 +60,11 @@ class PainelController extends Controller
         return view('acoes.calculo', ['ativos' => $ativos]);
     }
 
+    public function porcentagem(): View
+    {
+        return view('acoes.porcentagem');
+    }
+
     public function formAdicionar(): View
     {
         return view('acoes.adicionar');

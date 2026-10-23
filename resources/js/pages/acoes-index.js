@@ -20,6 +20,8 @@ if (grid) {
         queda: (a, b) => (num(a, 'variacao') ?? Infinity) - (num(b, 'variacao') ?? Infinity),
         // maior preço primeiro
         valor: (a, b) => (num(b, 'preco') ?? -Infinity) - (num(a, 'preco') ?? -Infinity),
+        // menor preço primeiro (sem dado vai para o fim)
+        menor: (a, b) => (num(a, 'preco') ?? Infinity) - (num(b, 'preco') ?? Infinity),
     };
 
     const ordenar = (chave) => {

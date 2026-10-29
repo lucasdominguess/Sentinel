@@ -6,13 +6,10 @@ Busca os ativos no yfinance e grava:
                            mín/máx já buscava (mesma requisição, zero custo);
   - `coletas`           -> log da própria execução.
 
-Execução (preferir os comandos artisan, que resolvem o interpretador):
-    php artisan sentinel:collect
-    php artisan sentinel:collect PETR4.SA --tipo=acao
-
-    python fetch_stocks.py            # todos os tickers ativos no banco
-    python fetch_stocks.py PETR4.SA   # um ou mais tickers específicos
-    python fetch_stocks.py --no-save  # só imprime, não grava
+Execução (use o Python do venv — veja scripts/python/README.md):
+    .venv/bin/python fetch_stocks.py            # todos os tickers ativos no banco
+    .venv/bin/python fetch_stocks.py PETR4.SA   # um ou mais tickers específicos
+    .venv/bin/python fetch_stocks.py --no-save  # só imprime, não grava
 """
 
 import sys

@@ -1,9 +1,7 @@
 """Conexão isolada com o banco de dados (PostgreSQL).
 
 Mantida separada para que a lógica de negócio não conheça detalhes de
-conexão. **Ainda não é usada no v1** (que apenas busca e imprime), mas já
-deixa pronto o caminho para quando o coletor passar a gravar no banco
-compartilhado com o Laravel.
+conexão. Quem usa é database/repository.py, onde todo o SQL fica concentrado.
 
 As credenciais vêm de `config.settings`, que por sua vez lê o .env do
 Laravel na raiz do projeto.
@@ -15,8 +13,8 @@ from config import settings
 def get_connection():
     """Abre uma conexão psycopg2 com o Postgres do projeto.
 
-    O import do psycopg2 fica dentro da função de propósito: assim o v1
-    (somente print) roda sem precisar do driver instalado.
+    O import do psycopg2 fica dentro da função de propósito: assim o modo
+    --no-save roda sem precisar do driver instalado.
     """
     import psycopg2
 

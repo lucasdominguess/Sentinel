@@ -64,4 +64,12 @@ class AcaoController extends Controller
 
         return ApiResponse::paginated($paginator, 'Histórico de cotações recuperado com sucesso');
     }
+
+    public function historico(Acao $acao, FilterCotacaoIndexRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $paginator = $this->service->historicoDiario($acao, $data['perPage'], $data['page']);
+
+        return ApiResponse::paginated($paginator, 'Histórico diário recuperado com sucesso');
+    }
 }

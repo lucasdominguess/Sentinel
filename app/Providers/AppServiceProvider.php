@@ -29,6 +29,14 @@ use App\Contracts\Services\AcaoServiceInterface;
 use App\Services\AcaoService;
 use App\Contracts\Repositories\AcaoRepositoryInterface;
 use App\Repositories\AcaoRepository;
+use App\Contracts\Services\AporteServiceInterface;
+use App\Services\AporteService;
+use App\Contracts\Repositories\AporteRepositoryInterface;
+use App\Repositories\AporteRepository;
+use App\Contracts\Services\ColetaServiceInterface;
+use App\Services\ColetaService;
+use App\Contracts\Repositories\ColetaRepositoryInterface;
+use App\Repositories\ColetaRepository;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -93,6 +101,22 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             AcaoRepositoryInterface::class,
             AcaoRepository::class
+        );
+        $this->app->bind(
+            AporteServiceInterface::class,
+            AporteService::class
+        );
+        $this->app->bind(
+            AporteRepositoryInterface::class,
+            AporteRepository::class
+        );
+        $this->app->bind(
+            ColetaServiceInterface::class,
+            ColetaService::class
+        );
+        $this->app->bind(
+            ColetaRepositoryInterface::class,
+            ColetaRepository::class
         );
     }
 

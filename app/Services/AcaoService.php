@@ -6,6 +6,7 @@ use App\Contracts\Repositories\AcaoRepositoryInterface;
 use App\Contracts\Services\AcaoServiceInterface;
 use App\DTOs\AcaoDTO;
 use App\DTOs\AcaoResponseDTO;
+use App\DTOs\CotacaoDiariaResponseDTO;
 use App\DTOs\CotacaoResponseDTO;
 use App\Models\Acao;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -59,6 +60,17 @@ class AcaoService implements AcaoServiceInterface
 
         $paginator->getCollection()->transform(function ($item) {
             return CotacaoResponseDTO::fromModel($item)->toArray();
+        });
+
+        return $paginator;
+    }
+
+    public function historicoDiario(Acao $acao, int $perPage = 500, int $page = 1): LengthAwarePaginator
+    {
+        $paginator = $this->repository->historicoDiario($acao, $perPage, $page);
+
+        $paginator->getCollection()->transform(function ($item) {
+            return CotacaoDiariaResponseDTO::fromModel($item)->toArray();
         });
 
         return $paginator;

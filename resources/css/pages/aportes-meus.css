@@ -1,0 +1,166 @@
+/* aportes-meus.css — dashboard da posição consolidada (carteira) */
+
+.page-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.page-head h1 {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.empty {
+    padding: 40px;
+    text-align: center;
+}
+
+/* ---------- Resumo (cards de topo) ---------- */
+.resumo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.resumo__item {
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.resumo__item .k {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.resumo__item .v {
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ---------- Grade de ativos ---------- */
+.pos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+}
+
+.pos-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px;
+}
+
+.pos-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.pos-card__ticker {
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.3px;
+}
+
+.pos-card__nome {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pos-card__medio {
+    margin-top: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pos-card__medio .k {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.pos-card__medio .v {
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.pos-card__stats {
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px 8px;
+}
+
+.pos-card__stats > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pos-card__stats .k {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.pos-card__stats .v {
+    font-size: 13.5px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.pos-card__val {
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.pos-card__val .k {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.pos-card__val .v {
+    font-size: 16px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Cores de valorização ---------- */
+.valor--up {
+    color: var(--positive);
+}
+
+.valor--down {
+    color: var(--negative);
+}
+
+.valor--flat {
+    color: var(--text-muted);
+}

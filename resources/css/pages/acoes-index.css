@@ -1,92 +1,119 @@
-/* acoes-index.css — visuais exclusivos da tela de listagem de ações */
+/* acoes-index.css — visuais exclusivos da tela de listagem de ações (redesign) */
 
+/* ---------- Cabeçalho com resumo ---------- */
 .page-head {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: 18px;
     flex-wrap: wrap;
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
 }
 
 .page-head h1 {
-    font-size: 26px;
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.head-stats {
+    display: flex;
+    gap: 28px;
+    font-variant-numeric: tabular-nums;
+}
+
+.head-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.head-stat .k {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.head-stat .v {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-heading);
+    font-size: 21px;
     font-weight: 700;
 }
 
-.search {
-    width: 320px;
-    max-width: 100%;
-    padding: 10px 14px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text);
-    font-size: 15px;
-    outline: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+.head-stat .v .up {
+    color: var(--up);
 }
 
-.search:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 25%, transparent);
+.head-stat .v .down {
+    color: var(--down);
 }
 
+/* ---------- Barra de ferramentas ---------- */
 .toolbar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
+    gap: 14px;
     flex-wrap: wrap;
     margin-bottom: 24px;
 }
 
+.toolbar__spacer {
+    flex: 1;
+}
+
+/* o grupo de ordenação usa .seg/.seg-opt do global; o JS alterna .is-active */
 .sort-pills {
-    display: flex;
-    gap: 8px;
     flex-wrap: wrap;
 }
 
-.pill {
-    padding: 8px 14px;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text-muted);
-    font-size: 13.5px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+.search-wrap {
+    position: relative;
+    width: 280px;
+    max-width: 100%;
 }
 
-.pill:hover {
-    background: var(--surface-2);
-    color: var(--text);
+.search-ico {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
 }
 
-.pill.is-active {
-    background: var(--primary);
-    color: var(--primary-contrast);
-    border-color: var(--primary);
+.search.input {
+    padding-left: 34px;
 }
 
+/* ---------- Grade de cartões ---------- */
 .acoes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 18px;
 }
 
 .acao-card {
     display: flex;
     flex-direction: column;
-    gap: 6px;
     padding: 18px;
-    transition: transform 0.08s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    background: transparent;
+    box-shadow: none;
+    color: var(--text);
+    text-decoration: none;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .acao-card:hover {
-    transform: translateY(-2px);
-    border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+    transform: translateY(-1px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-md);
 }
 
 /* o atributo [hidden] sozinho não vence o display:flex do card — reforçamos aqui */
@@ -102,77 +129,135 @@
 }
 
 .acao-card__ticker {
+    font-family: var(--font-heading);
     font-weight: 700;
-    font-size: 16px;
-    letter-spacing: 0.3px;
-}
-
-.acao-card__var {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
-}
-
-.var-rs {
-    font-size: 11.5px;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    color: var(--text-muted);
-}
-
-.var-rs.up {
-    color: var(--positive);
-}
-
-.var-rs.down {
-    color: var(--negative);
+    font-size: 17px;
+    letter-spacing: 0.01em;
 }
 
 .acao-card__nome {
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 12.5px;
+    color: var(--muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-top: 2px;
 }
 
 .acao-card__preco {
-    margin-top: 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 16px 0 4px;
 }
 
 .acao-card__preco .valor {
-    font-size: 22px;
+    font-family: var(--font-heading);
+    font-size: 32px;
     font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
     font-variant-numeric: tabular-nums;
 }
 
-.acao-card__stats {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--border);
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px 8px;
+.acao-card__preco .cifrao {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-right: 4px;
 }
 
-.acao-card__stats > div {
+.var-rs {
+    font-size: 12px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+}
+
+.var-rs.up {
+    color: var(--up);
+}
+
+.var-rs.down {
+    color: var(--down);
+}
+
+/* ---------- Barra de faixa do dia (mín → máx) ---------- */
+.acao-card__range {
+    margin: 10px 0 4px;
+}
+
+.range-track {
+    position: relative;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+}
+
+.range-open {
+    position: absolute;
+    top: -3px;
+    width: 1px;
+    height: 9px;
+    background: var(--muted);
+    transform: translateX(-0.5px);
+}
+
+.range-dot {
+    position: absolute;
+    top: -4px;
+    width: 11px;
+    height: 11px;
+    margin-left: -5.5px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--primary);
+}
+
+.range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Rodapé do cartão (fech. ant. / abertura) ---------- */
+.acao-card__foot {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    margin-top: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+.acao-card__foot > div {
     display: flex;
     flex-direction: column;
     gap: 2px;
 }
 
-.acao-card__stats .k {
-    font-size: 11px;
-    color: var(--text-muted);
+.acao-card__foot > div + div {
+    padding-left: 14px;
+    border-left: 1px solid var(--border);
 }
 
-.acao-card__stats .v {
+.acao-card__foot .k {
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.acao-card__foot .v {
     font-size: 13.5px;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
 }
 
+/* ---------- Estados vazios ---------- */
 .empty {
     padding: 40px;
     text-align: center;
@@ -181,7 +266,7 @@
 .empty code {
     background: var(--surface-2);
     padding: 2px 6px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
 }
 
 .no-results {
@@ -198,7 +283,7 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-lg);
     font-size: 13px;
     pointer-events: none;
     opacity: 0;
@@ -214,8 +299,8 @@
 .card-tooltip .tt-title {
     font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
-    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    color: var(--muted);
     margin-bottom: 6px;
 }
 
@@ -226,7 +311,7 @@
 }
 
 .card-tooltip .tt-row span {
-    color: var(--text-muted);
+    color: var(--muted);
 }
 
 .card-tooltip .tt-row strong {
@@ -237,10 +322,22 @@
     font-style: normal;
     font-weight: 500;
     font-size: 11px;
-    color: var(--text-muted);
+    color: var(--muted);
     margin-left: 3px;
 }
 
 .card-tooltip .tt-empty {
-    color: var(--text-muted);
+    color: var(--muted);
+}
+
+@media (max-width: 680px) {
+    .page-head h1 {
+        font-size: 30px;
+    }
+    .head-stats {
+        gap: 20px;
+    }
+    .search-wrap {
+        width: 100%;
+    }
 }

@@ -10,30 +10,22 @@ from datetime import datetime
 import yfinance as yf
 
 from config.logging_config import setup_logging
+from services.history_service import extremos, fetch_history
 
 logger = setup_logging("stock_service")
 
 
-def _min_max_mes(yf_ticker):
-    """Mínimo (Low) e máximo (High) do mês atual, calculados do histórico.
+def _historico_mes(yf_ticker) -> list[dict]:
+    """Candles diários do mês corrente.
 
-    O info do yfinance não traz mín/máx mensal (só dia e 52 semanas), então
-    buscamos o histórico do mês e tiramos os extremos. 1 requisição extra.
+    Uma requisição que serve a dois propósitos: calcular mín/máx do mês (o
+    `info` do yfinance não traz mensal, só dia e 52 semanas) e alimentar
+    `cotacoes_diarias`. Como vem o mês inteiro, um dia de pregão que a coleta
+    perdeu é recuperado na execução seguinte — o buraco se fecha sozinho.
     """
     inicio_mes = datetime.now().replace(day=1).strftime("%Y-%m-%d")
-    try:
-        hist = yf_ticker.history(start=inicio_mes)
-        if hist.empty:
-            return None, None, None, None
-        return (
-            float(hist["Low"].min()),
-            hist["Low"].idxmin().date(),
-            float(hist["High"].max()),
-            hist["High"].idxmax().date(),
-        )
-    except Exception as e:
-        logger.error("Erro ao calcular mín/máx do mês: %s", e)
-        return None, None, None, None
+
+    return fetch_history(yf_ticker, start=inicio_mes)
 
 
 def _none_if_zero(value):
@@ -80,7 +72,8 @@ def fetch_quote(ticker: str) -> dict:
 
     price = info.get("currentPrice") or info.get("regularMarketPrice")
     previous_close = info.get("previousClose")
-    minima_mes, minima_mes_data, maxima_mes, maxima_mes_data = _min_max_mes(yf_ticker)
+    historico = _historico_mes(yf_ticker)
+    minima_mes, minima_mes_data, maxima_mes, maxima_mes_data = extremos(historico)
 
     return {
         "ticker": info.get("symbol", ticker),
@@ -102,6 +95,7 @@ def fetch_quote(ticker: str) -> dict:
         "minima_mes_data": minima_mes_data,
         "maxima_mes": maxima_mes,
         "maxima_mes_data": maxima_mes_data,
+        "historico_mes": historico,
         "volume": info.get("volume") or info.get("regularMarketVolume"),
         "avg_volume": info.get("averageVolume"),
         "market_cap": info.get("marketCap"),

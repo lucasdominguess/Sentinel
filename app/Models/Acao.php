@@ -32,6 +32,11 @@ class Acao extends Model
         return $this->hasMany(Cotacao::class);
     }
 
+    public function cotacoesDiarias(): HasMany
+    {
+        return $this->hasMany(CotacaoDiaria::class);
+    }
+
     public function aportes(): HasMany
     {
         return $this->hasMany(Aporte::class);
@@ -41,5 +46,11 @@ class Acao extends Model
     public function ultimaCotacao(): HasOne
     {
         return $this->hasOne(Cotacao::class)->latestOfMany('capturado_em');
+    }
+
+    // Último fechamento diário — base estável para variação e rentabilidade
+    public function ultimoFechamento(): HasOne
+    {
+        return $this->hasOne(CotacaoDiaria::class)->latestOfMany('data');
     }
 }

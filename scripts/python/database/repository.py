@@ -138,3 +138,143 @@ def salvar_cotacoes(quotes: list[dict], tipo: str = "acao") -> int:
         conn.close()
 
     return inseridas
+
+
+# ----------------------------------------------------------------------
+# Fechamento diário (cotacoes_diarias)
+# ----------------------------------------------------------------------
+# Upsert pela chave (acao_id, data): rodar duas vezes no mesmo dia corrige a
+# linha em vez de duplicar. É o que permite reprocessar o backfill à vontade
+# e o que faz a coleta do dia sobrescrever o candle parcial pelo definitivo.
+_UPSERT_COTACAO_DIARIA = """
+    INSERT INTO cotacoes_diarias (
+        acao_id, data, abertura, maxima, minima,
+        fechamento, fechamento_ajustado, volume, created_at, updated_at
+    ) VALUES (
+        %(acao_id)s, %(data)s, %(abertura)s, %(maxima)s, %(minima)s,
+        %(fechamento)s, %(fechamento_ajustado)s, %(volume)s, now(), now()
+    )
+    ON CONFLICT (acao_id, data) DO UPDATE SET
+        abertura            = EXCLUDED.abertura,
+        maxima              = EXCLUDED.maxima,
+        minima              = EXCLUDED.minima,
+        fechamento          = EXCLUDED.fechamento,
+        fechamento_ajustado = EXCLUDED.fechamento_ajustado,
+        volume              = EXCLUDED.volume,
+        updated_at          = now();
+"""
+
+
+def listar_acoes_ativas() -> list[dict]:
+    """Ativos marcados como ativos, com id e ticker (usado pelo backfill)."""
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT id, ticker FROM acoes WHERE ativo = true ORDER BY ticker")
+            return [{"id": row[0], "ticker": row[1]} for row in cur.fetchall()]
+    finally:
+        conn.close()
+
+
+def salvar_historico_diario(itens: list[dict]) -> int:
+    """Grava os candles diários. Retorna o total de linhas gravadas.
+
+    Cada item é {"ticker": str, "linhas": [...]} — formato produzido tanto
+    pela coleta (histórico do mês, de brinde na mesma requisição do mín/máx)
+    quanto pelo backfill (histórico longo). Um ativo por transação: se um
+    falhar, os demais continuam.
+    """
+    if not itens:
+        return 0
+
+    conn = get_connection()
+    conn.autocommit = False
+    gravadas = 0
+
+    try:
+        with conn.cursor() as cur:
+            for item in itens:
+                linhas = item.get("linhas") or []
+                if not linhas:
+                    continue
+                try:
+                    cur.execute("SELECT id FROM acoes WHERE ticker = %(ticker)s", {"ticker": item["ticker"]})
+                    encontrada = cur.fetchone()
+                    if not encontrada:
+                        logger.warning("Ticker %s não existe em acoes; histórico ignorado.", item["ticker"])
+                        conn.rollback()
+                        continue
+
+                    acao_id = encontrada[0]
+                    for linha in linhas:
+                        cur.execute(_UPSERT_COTACAO_DIARIA, {"acao_id": acao_id, **linha})
+
+                    conn.commit()
+                    gravadas += len(linhas)
+                except Exception as e:
+                    conn.rollback()
+                    logger.error("Erro ao salvar histórico de %s: %s", item.get("ticker"), e)
+    finally:
+        conn.close()
+
+    return gravadas
+
+
+# ----------------------------------------------------------------------
+# Log de execução (coletas)
+# ----------------------------------------------------------------------
+def registrar_inicio_coleta(origem: str = "coleta") -> int | None:
+    """Abre a linha de log e devolve o id. Erro aqui não aborta a coleta."""
+    try:
+        conn = get_connection()
+    except Exception as e:
+        logger.error("Não foi possível registrar o início da coleta: %s", e)
+        return None
+
+    try:
+        conn.autocommit = True
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO coletas (origem, inicio, created_at, updated_at)"
+                " VALUES (%(origem)s, now(), now(), now()) RETURNING id",
+                {"origem": origem},
+            )
+            return cur.fetchone()[0]
+    except Exception as e:
+        logger.error("Não foi possível registrar o início da coleta: %s", e)
+        return None
+    finally:
+        conn.close()
+
+
+def finalizar_coleta(coleta_id: int | None, ativos_ok: int, ativos_falha: int,
+                     registros: int, erro: str | None = None) -> None:
+    """Fecha a linha de log. `fim` nulo significa execução que não terminou."""
+    if coleta_id is None:
+        return
+
+    try:
+        conn = get_connection()
+    except Exception as e:
+        logger.error("Não foi possível finalizar a coleta %s: %s", coleta_id, e)
+        return
+
+    try:
+        conn.autocommit = True
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE coletas SET fim = now(), ativos_ok = %(ok)s, ativos_falha = %(falha)s,"
+                " registros = %(registros)s, erro = %(erro)s, updated_at = now()"
+                " WHERE id = %(id)s",
+                {
+                    "id": coleta_id,
+                    "ok": ativos_ok,
+                    "falha": ativos_falha,
+                    "registros": registros,
+                    "erro": erro[:2000] if erro else None,
+                },
+            )
+    except Exception as e:
+        logger.error("Não foi possível finalizar a coleta %s: %s", coleta_id, e)
+    finally:
+        conn.close()

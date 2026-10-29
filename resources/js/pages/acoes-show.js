@@ -1,4 +1,6 @@
 // acoes-show.js — gráfico de evolução do preço (SVG vanilla, cores via CSS/tema)
+// Fonte: fechamento diário (cotacoes_diarias), não o snapshot intradiário —
+// um ponto por dia de pregão é o que torna a série comparável ao longo do tempo.
 const el = document.getElementById('chart');
 const empty = document.getElementById('chart-empty');
 const rangeLabel = document.getElementById('chart-range');
@@ -7,6 +9,7 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 const W = 820;
 const H = 320;
 const PAD = { top: 20, right: 16, bottom: 34, left: 60 };
+const DIAS_NO_ANO = 365;
 
 if (el) {
     const endpoint = el.dataset.endpoint;
@@ -31,14 +34,23 @@ function fmtPreco(v) {
     return v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function fmtData(d) {
-    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+// 'YYYY-MM-DD' no fuso local: new Date(iso) assumiria UTC e exibiria o dia anterior
+function parseData(iso) {
+    if (!iso) return null;
+    const [ano, mes, dia] = iso.split('-').map(Number);
+    return new Date(ano, mes - 1, dia);
+}
+
+function fmtData(d, comAno = false) {
+    return comAno
+        ? d.toLocaleDateString('pt-BR', { month: '2-digit', year: '2-digit' })
+        : d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
 }
 
 function render(items) {
     const pts = items
-        .map((c) => ({ t: new Date(c.capturado_em), v: parseFloat(c.preco) }))
-        .filter((p) => !Number.isNaN(p.v) && !Number.isNaN(p.t.getTime()));
+        .map((c) => ({ t: parseData(c.data), v: parseFloat(c.fechamento) }))
+        .filter((p) => p.t && !Number.isNaN(p.v) && !Number.isNaN(p.t.getTime()));
 
     if (pts.length < 2) {
         showEmpty();
@@ -82,17 +94,21 @@ function render(items) {
     const last = pts[pts.length - 1];
     svg.appendChild(node('circle', { cx: x(pts.length - 1), cy: y(last.v), r: 4, class: 'chart-dot' }));
 
+    // Série de mais de um ano cabe melhor rotulada por mês/ano
+    const dias = (last.t - pts[0].t) / 86400000;
+    const comAno = dias > DIAS_NO_ANO;
+
     // labels do eixo X (primeira e última data)
     const firstLbl = node('text', { x: PAD.left, y: H - 10, class: 'chart-label' });
-    firstLbl.textContent = fmtData(pts[0].t);
+    firstLbl.textContent = fmtData(pts[0].t, comAno);
     svg.appendChild(firstLbl);
     const lastLbl = node('text', { x: W - PAD.right, y: H - 10, class: 'chart-label chart-label--end' });
-    lastLbl.textContent = fmtData(last.t);
+    lastLbl.textContent = fmtData(last.t, comAno);
     svg.appendChild(lastLbl);
 
     el.appendChild(svg);
 
     if (rangeLabel) {
-        rangeLabel.textContent = `${pts.length} pontos · ${fmtData(pts[0].t)} → ${fmtData(last.t)}`;
+        rangeLabel.textContent = `${pts.length} dias · ${fmtData(pts[0].t, comAno)} → ${fmtData(last.t, comAno)}`;
     }
 }

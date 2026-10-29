@@ -33,6 +33,10 @@ use App\Contracts\Services\AporteServiceInterface;
 use App\Services\AporteService;
 use App\Contracts\Repositories\AporteRepositoryInterface;
 use App\Repositories\AporteRepository;
+use App\Contracts\Services\ColetaServiceInterface;
+use App\Services\ColetaService;
+use App\Contracts\Repositories\ColetaRepositoryInterface;
+use App\Repositories\ColetaRepository;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -105,6 +109,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             AporteRepositoryInterface::class,
             AporteRepository::class
+        );
+        $this->app->bind(
+            ColetaServiceInterface::class,
+            ColetaService::class
+        );
+        $this->app->bind(
+            ColetaRepositoryInterface::class,
+            ColetaRepository::class
         );
     }
 

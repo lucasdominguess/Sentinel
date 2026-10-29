@@ -82,6 +82,19 @@ class AcaoRepository implements AcaoRepositoryInterface
             ->paginate($perPage);
     }
 
+    public function historicoDiario(Acao $acao, int $perPage = 500, int $page = 1): LengthAwarePaginator
+    {
+        // Pega os N dias mais recentes (desc) e devolve em ordem cronológica:
+        // o gráfico quer o passado recente, não o começo da série histórica.
+        $paginator = $acao->cotacoesDiarias()
+            ->orderByDesc('data')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        return $paginator->setCollection(
+            $paginator->getCollection()->reverse()->values()
+        );
+    }
+
     // Relações carregadas em toda projeção de Acao — garante consistência entre os métodos
     private function withRelations(): array
     {

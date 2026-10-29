@@ -18,4 +18,6 @@ interface AcaoRepositoryInterface
     public function delete(Acao $acao);
 
     public function historicoCotacoes(Acao $acao, int $perPage = 90, int $page = 1): LengthAwarePaginator;
+
+    public function historicoDiario(Acao $acao, int $perPage = 500, int $page = 1): LengthAwarePaginator;
 }

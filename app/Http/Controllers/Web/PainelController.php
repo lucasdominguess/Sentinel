@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Contracts\Services\AcaoServiceInterface;
 use App\Contracts\Services\AporteServiceInterface;
+use App\Contracts\Services\ColetaServiceInterface;
 use App\DTOs\AcaoDTO;
 use App\DTOs\AporteDTO;
 use App\Enums\TipoAtivo;
@@ -21,6 +22,7 @@ class PainelController extends Controller
     public function __construct(
         private AcaoServiceInterface $service,
         private AporteServiceInterface $aporteService,
+        private ColetaServiceInterface $coletaService,
     ) {}
 
     public function index(): View
@@ -139,9 +141,13 @@ class PainelController extends Controller
             ->filter()
             ->max();
 
+        // Última execução do coletor: mostra também a que não terminou (fim nulo)
+        $coleta = $this->coletaService->ultima()?->toArray();
+
         return view('acoes.index', [
             'acoes' => $acoes,
             'ultimaColeta' => $ultimaColeta,
+            'coleta' => $coleta,
             'titulo' => $titulo,
             'tipo' => $tipo,
         ]);

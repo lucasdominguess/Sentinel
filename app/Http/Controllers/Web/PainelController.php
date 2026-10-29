@@ -3,20 +3,24 @@
 namespace App\Http\Controllers\Web;
 
 use App\Contracts\Services\AcaoServiceInterface;
+use App\Contracts\Services\AporteServiceInterface;
 use App\DTOs\AcaoDTO;
+use App\DTOs\AporteDTO;
 use App\Enums\TipoAtivo;
 use App\Http\Requests\AdicionarTicketRequest;
+use App\Http\Requests\AporteCreateRequest;
 use App\Models\Acao;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
 
-// Controller web (server-rendered). Reaproveita o Service do fluxo canônico —
+// Controller web (server-rendered). Reaproveita os Services do fluxo canônico —
 // sem lógica de negócio aqui.
 class PainelController extends Controller
 {
     public function __construct(
         private AcaoServiceInterface $service,
+        private AporteServiceInterface $aporteService,
     ) {}
 
     public function index(): View
@@ -63,6 +67,48 @@ class PainelController extends Controller
     public function porcentagem(): View
     {
         return view('acoes.porcentagem');
+    }
+
+    public function formAporte(): View
+    {
+        // Mesma lista suspensa do cálculo de cotas, mas o value é o id do ativo (gravado no banco)
+        $paginator = $this->service->index(1000, 1, []);
+
+        $ativos = collect($paginator->items())
+            ->map(fn ($a) => [
+                'id' => $a['id'],
+                'ticker' => $a['ticker'],
+                'nome' => $a['nome'],
+                'preco' => $a['ultima_cotacao']['preco'] ?? null,
+            ])
+            ->sortBy('ticker')
+            ->values()
+            ->all();
+
+        return view('aportes.registrar', ['ativos' => $ativos]);
+    }
+
+    public function storeAporte(AporteCreateRequest $request): RedirectResponse
+    {
+        $this->aporteService->store(AporteDTO::fromRequest($request->validated()));
+
+        return redirect()
+            ->route('painel.aportes.create')
+            ->with('sucesso', 'Aporte registrado com sucesso.');
+    }
+
+    public function meusAtivos(): View
+    {
+        $posicoes = $this->aporteService->posicoes();
+
+        return view('aportes.meus-ativos', ['posicoes' => $posicoes]);
+    }
+
+    public function aportesIndex(): View
+    {
+        $aportes = $this->aporteService->index(15, (int) request('page', 1));
+
+        return view('aportes.registros', ['aportes' => $aportes]);
     }
 
     public function formAdicionar(): View

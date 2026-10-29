@@ -260,6 +260,17 @@ h3 {
     color: var(--primary);
 }
 
+.drawer__sublink {
+    margin-left: 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.drawer__sublink.is-active {
+    color: var(--primary);
+}
+
 .drawer__divider {
     height: 1px;
     background: var(--border);

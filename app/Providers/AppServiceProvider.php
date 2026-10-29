@@ -29,6 +29,10 @@ use App\Contracts\Services\AcaoServiceInterface;
 use App\Services\AcaoService;
 use App\Contracts\Repositories\AcaoRepositoryInterface;
 use App\Repositories\AcaoRepository;
+use App\Contracts\Services\AporteServiceInterface;
+use App\Services\AporteService;
+use App\Contracts\Repositories\AporteRepositoryInterface;
+use App\Repositories\AporteRepository;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -93,6 +97,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             AcaoRepositoryInterface::class,
             AcaoRepository::class
+        );
+        $this->app->bind(
+            AporteServiceInterface::class,
+            AporteService::class
+        );
+        $this->app->bind(
+            AporteRepositoryInterface::class,
+            AporteRepository::class
         );
     }
 

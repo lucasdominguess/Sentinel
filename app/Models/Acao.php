@@ -32,6 +32,11 @@ class Acao extends Model
         return $this->hasMany(Cotacao::class);
     }
 
+    public function aportes(): HasMany
+    {
+        return $this->hasMany(Aporte::class);
+    }
+
     // Última cotação coletada — usada na listagem e no card do ativo
     public function ultimaCotacao(): HasOne
     {

@@ -46,6 +46,11 @@
             <li class="drawer__divider" aria-hidden="true"></li>
             <li><a href="{{ route('painel.calculo') }}" class="drawer__link {{ request()->routeIs('painel.calculo') ? 'is-active' : '' }}">🧮 Cálculo de cotas</a></li>
             <li><a href="{{ route('painel.porcentagem') }}" class="drawer__link {{ request()->routeIs('painel.porcentagem') ? 'is-active' : '' }}">➗ Cálculo de porcentagem</a></li>
+            <li class="drawer__divider" aria-hidden="true"></li>
+            <li><a href="{{ route('painel.aportes.create') }}" class="drawer__link {{ request()->routeIs('painel.aportes.create') ? 'is-active' : '' }}">💰 Registrar aporte</a></li>
+            <li><a href="{{ route('painel.aportes.meus') }}" class="drawer__link drawer__sublink {{ request()->routeIs('painel.aportes.meus') ? 'is-active' : '' }}">↳ Meus ativos</a></li>
+            <li><a href="{{ route('painel.aportes.index') }}" class="drawer__link drawer__sublink {{ request()->routeIs('painel.aportes.index') ? 'is-active' : '' }}">↳ Registros</a></li>
+            <li class="drawer__divider" aria-hidden="true"></li>
             <li><a href="{{ route('painel.adicionar') }}" class="drawer__link {{ request()->routeIs('painel.adicionar') ? 'is-active' : '' }}">➕ Adicionar ticket</a></li>
         </ul>
     </nav>

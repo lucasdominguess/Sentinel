@@ -1,0 +1,44 @@
+ticker,nome,setor,segmento,moeda,ativo,tipo
+ALLD3.SA,Allied Tecnologia S.A.,Technology,Software - Application,BRL,True,acao
+ALPA3.SA,Alpargatas S.A.,Consumer Cyclical,Footwear & Accessories,BRL,True,acao
+ANIM3.SA,Ânima Holding S.A.,Consumer Defensive,Education & Training Services,BRL,True,acao
+AXIA3.SA,AXIA Energia SA,Utilities,Utilities - Renewable,BRL,True,acao
+B3SA3.SA,"B3 S.A. - Brasil, Bolsa, Balcão",Financial Services,Financial Data & Stock Exchanges,BRL,True,acao
+BBSE3.SA,BB Seguridade Participações S.A.,Financial Services,Insurance - Diversified,BRL,True,acao
+BHIA3.SA,Grupo Casas Bahia S.A.,Consumer Cyclical,Specialty Retail,BRL,True,acao
+BMGB4.SA,Banco BMG S.A.,Financial Services,Banks - Regional,BRL,True,acao
+BOVA11.SA,ISHARES IBOVESPA CLASSE DE ÍNDICE - RESPONSABILIDADE LIMITADA,,,BRL,True,etf
+CMIG4.SA,Companhia Energética de Minas Gerais - CEMIG,Utilities,Utilities - Regulated Electric,BRL,True,acao
+COGN3.SA,Cogna Educação S.A.,Consumer Defensive,Education & Training Services,BRL,True,acao
+CPLE3.SA,Companhia Paranaense de Energia - COPEL,Utilities,Utilities - Regulated Electric,BRL,True,acao
+CSNA3.SA,Companhia Siderúrgica Nacional,Basic Materials,Steel,BRL,True,acao
+CXSE3.SA,Caixa Seguridade Participações S.A.,Financial Services,Insurance - Diversified,BRL,True,acao
+DIVO11.SA,IT NOW IDIV FUNDO DE ÍNDICE RESPONSABILIDADE LIMITADA,,,BRL,True,etf
+EGIE3.SA,Engie Brasil Energia S.A.,Utilities,Utilities - Renewable,BRL,True,acao
+ENGI4.SA,Energisa S.A.,Utilities,Utilities - Regulated Electric,BRL,True,acao
+EQPA3.SA,Equatorial Pará Distribuidora de Energia S.A.,Utilities,Utilities - Regulated Electric,BRL,True,acao
+FESA4.SA,Cia de Ferro Ligas da Bahia S.A. - FERBASA,Basic Materials,Steel,BRL,True,acao
+GARE11.SA,Guardian Logistica Fundo De Investimento Imobiliario,Real Estate,REIT - Specialty,BRL,True,fii
+GGRC11.SA,Ggr Covipe Renda Fundo Investimento Imobiliario,Real Estate,REIT - Industrial,BRL,True,fii
+GRND3.SA,Grendene S.A.,Consumer Cyclical,Footwear & Accessories,BRL,True,acao
+HGLG11.SA,Cshg Logistica - Fundo De Investimento Imobiliario,Real Estate,REIT - Diversified,BRL,True,fii
+ITSA4.SA,Itaúsa S.A.,Industrials,Conglomerates,BRL,True,acao
+JSLG3.SA,JSL S.A.,Industrials,Integrated Freight & Logistics,BRL,True,acao
+LAVV3.SA,Lavvi Empreendimentos Imobiliários S.A.,Real Estate,Real Estate Services,BRL,True,acao
+MDNE3.SA,Moura Dubeux Engenharia S.A.,Real Estate,Real Estate Services,BRL,True,acao
+MELK3.SA,Melnick Desenvolvimento Imobiliário S.A.,Real Estate,Real Estate Services,BRL,True,acao
+MGLU3.SA,Magazine Luiza S.A.,Consumer Cyclical,Specialty Retail,BRL,True,acao
+MRVE3.SA,MRV Engenharia e Participações S.A.,Real Estate,Real Estate - Development,BRL,True,acao
+MTRE3.SA,Mitre Realty Empreendimentos e Participações S.A.,Real Estate,Real Estate - Development,BRL,True,acao
+PGMN3.SA,Empreendimentos Pague Menos S.A.,Healthcare,Pharmaceutical Retailers,BRL,True,acao
+POMO3.SA,Marcopolo S.A.,Industrials,Farm & Heavy Construction Machinery,BRL,True,acao
+POMO4.SA,Marcopolo S.A.,Industrials,Farm & Heavy Construction Machinery,BRL,True,acao
+RAIL3.SA,Rumo S.A.,Industrials,Railroads,BRL,True,acao
+RDOR3.SA,Rede D'Or São Luiz S.A.,Healthcare,Medical Care Facilities,BRL,True,acao
+RECV3.SA,Petroreconcavo S.A.,Energy,Oil & Gas E&P,BRL,True,acao
+SAPR4.SA,Companhia de Saneamento do Paraná - SANEPAR,Utilities,Utilities - Regulated Water,BRL,True,acao
+VALE3.SA,Vale S.A.,Basic Materials,Other Industrial Metals & Mining,BRL,True,acao
+VAMO3.SA,"Vamos Locação de Caminhões, Máquinas e Equipamentos S.A.",Industrials,Rental & Leasing Services,BRL,True,acao
+VGIR11.SA,Valora Re III Fundo De Investimento Imobiliario,Real Estate,REIT - Diversified,BRL,True,fii
+VGRI11.SA,Valora Renda Imobiliaria Fundo De Investimento Imobiliario - Responsabilidade Limitada,Real Estate,REIT - Diversified,BRL,True,fii
+VVEO3.SA,CM Hospitalar S/A,Healthcare,Medical Distribution,BRL,True,acao

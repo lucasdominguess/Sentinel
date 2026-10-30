@@ -1,92 +1,118 @@
-@extends('layouts.app')
+{{--
+  Meus ativos — posição consolidada da carteira.
+  Recebe do PainelController@meusAtivos:
+    $posicoes  Collection de arrays (PosicaoResponseDTO::toArray):
+               ['acao_id','ticker','nome','quantidade','total_investido','preco_medio',
+                'preco_atual','valor_atual','valorizacao_reais','valorizacao_pct']
+  Resumo, alocação, cor e peso são derivados aqui (o controller não os envia).
+--}}
+@extends('layouts.monitor')
 
-@section('title', 'Meus ativos — Sentinel')
+@section('title', 'Meus ativos · Sentinel')
 
 @push('styles')
-    @vite('resources/css/pages/aportes-meus.css')
+    @vite('resources/css/pages/carteira.css')
 @endpush
 
 @section('content')
     @php
-        $fmtBrl = fn($v) => 'R$ ' . number_format((float) $v, 2, ',', '.');
-        $fmtPct = fn($v) => number_format((float) $v, 2, ',', '.') . '%';
+        $brl = fn ($v) => number_format((float) $v, 2, ',', '.');
+        $mil = fn ($v) => 'R$ ' . number_format($v / 1000, 1, ',', '.') . ' mil';
 
-        $investidoTotal = $posicoes->sum('total_investido');
-        $valorAtualTotal = $posicoes->sum(fn($p) => $p['valor_atual'] ?? $p['total_investido']);
-        $valorizacaoTotal = $valorAtualTotal - $investidoTotal;
-        $valorizacaoPctTotal = $investidoTotal > 0 ? ($valorizacaoTotal / $investidoTotal) * 100 : null;
-        $clsTotal = $valorizacaoTotal > 0 ? 'up' : ($valorizacaoTotal < 0 ? 'down' : 'flat');
+        $posicoes = collect($posicoes);
+        // Sem cotação atual, o valor atual cai no total investido (igual à tela antiga)
+        $atualDe = fn ($p) => $p['valor_atual'] ?? $p['total_investido'];
+
+        $investido = (float) $posicoes->sum('total_investido');
+        $atual = (float) $posicoes->sum($atualDe);
+        $val = $atual - $investido;
+        $pct = $investido > 0 ? $val / $investido * 100 : 0;
+        $trend = $val > 0.004 ? 'up' : ($val < -0.004 ? 'down' : 'flat');
+        $sinal = ['up' => '+', 'down' => '−', 'flat' => ''][$trend];
+
+        // Ranking por valor atual (desc): top 5 recebem cat-1..5; o resto, cat-rest
+        $ranked = $posicoes->sortByDesc($atualDe)->values();
+        $cats = ['var(--cat-1)', 'var(--cat-2)', 'var(--cat-3)', 'var(--cat-4)', 'var(--cat-5)'];
+        $corDe = [];
+        foreach ($ranked as $i => $p) {
+            $corDe[$p['acao_id']] = $i < 5 ? $cats[$i] : 'var(--cat-rest)';
+        }
+
+        // Alocação para o donut: top 5 individuais + "Outros"
+        $alocacao = [];
+        foreach ($ranked as $i => $p) {
+            if ($i < 5) {
+                $alocacao[] = ['label' => $p['ticker'], 'value' => (float) $atualDe($p), 'color' => $cats[$i]];
+            }
+        }
+        $restoTotal = (float) $ranked->slice(5)->sum($atualDe);
+        if ($restoTotal > 0) {
+            $alocacao[] = ['label' => 'Outros', 'value' => $restoTotal, 'color' => 'var(--cat-rest)'];
+        }
+
+        $pesoDe = fn ($p) => $atual > 0 ? $atualDe($p) / $atual * 100 : 0;
     @endphp
 
-    <div class="page-head">
-        <div>
-            <h1>Meus ativos</h1>
-            <p class="muted">Posição consolidada da carteira — preço médio pago e valorização com base na última cotação.</p>
+    <section class="page-header">
+        <div class="page-header__title">
+            <span class="kicker">Aportes · Carteira</span>
+            <h1 class="h1">Meus ativos</h1>
+            <p class="page-header__lead">Posição consolidada da carteira — preço médio pago e valorização com base na última cotação.</p>
         </div>
-    </div>
+        <div class="page-header__actions">
+            <a class="btn btn-ghost" href="{{ route('painel.aportes.index') }}">Registros</a>
+            <a class="btn btn-primary" href="{{ route('painel.aportes.create') }}"><span aria-hidden="true">+</span> Registrar aporte</a>
+        </div>
+    </section>
 
     @if ($posicoes->isEmpty())
-        <div class="card empty">
-            <p>Nenhum aporte registrado ainda.</p>
-            <p class="muted">Use <a href="{{ route('painel.aportes.create') }}">Registrar aporte</a> para começar a montar sua carteira.</p>
+        <div class="empty" style="margin-top:28px">
+            <div class="empty__icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9v9z"/><path d="M12 3a9 9 0 0 1 9 9h-9z"/></svg>
+            </div>
+            <h2>Nenhum ativo na carteira</h2>
+            <p>Registre seu primeiro aporte para acompanhar preço médio, valor atual e valorização.</p>
+            <a class="btn btn-primary" href="{{ route('painel.aportes.create') }}">Registrar aporte</a>
         </div>
     @else
-        <div class="resumo">
-            <div class="card resumo__item">
-                <span class="k">Total investido</span>
-                <strong class="v">{{ $fmtBrl($investidoTotal) }}</strong>
-            </div>
-            <div class="card resumo__item">
-                <span class="k">Valor atual</span>
-                <strong class="v">{{ $fmtBrl($valorAtualTotal) }}</strong>
-            </div>
-            <div class="card resumo__item">
-                <span class="k">Valorização</span>
-                <strong class="v valor--{{ $clsTotal }}">
-                    {{ $valorizacaoTotal >= 0 ? '+' : '−' }}{{ $fmtBrl(abs($valorizacaoTotal)) }}
-                    @if ($valorizacaoPctTotal !== null)
-                        <span class="badge badge--{{ $clsTotal === 'flat' ? 'flat' : ($clsTotal === 'up' ? 'up' : 'down') }}">{{ $valorizacaoPctTotal >= 0 ? '▲' : '▼' }} {{ $fmtPct(abs($valorizacaoPctTotal)) }}</span>
-                    @endif
-                </strong>
-            </div>
+        <div class="portfolio-summary">
+            <section class="card summary" aria-label="Resumo da carteira">
+                <dl style="margin:0">
+                    <div class="kpi kpi--hero"><dt>Valor atual</dt><dd><span class="price__cur">R$</span>{{ $brl($atual) }}</dd></div>
+                </dl>
+                <dl class="summary__split">
+                    <div class="kpi"><dt>Total investido</dt><dd>R$ {{ $brl($investido) }}</dd></div>
+                    <div class="kpi"><dt>Valorização</dt><dd class="tone-{{ $trend }}">{{ $sinal }}R$ {{ $brl(abs($val)) }} <x-badge-var :pct="$pct" /></dd></div>
+                </dl>
+                <x-cost-bar size="lg" :cost="$investido" :value="$atual"
+                            left="Valor atual = {{ number_format($atual / max($investido, 1e-9) * 100, 1, ',', '.') }}% do custo" right="Custo" />
+            </section>
+
+            <section class="card allocation" aria-label="Alocação da carteira">
+                <div class="allocation__head"><span class="label">Alocação por ativo</span></div>
+                <x-donut :segments="$alocacao" :center-value="$mil($atual)" center-label="Valor atual" />
+            </section>
         </div>
 
-        <div class="pos-grid">
-            @foreach ($posicoes as $p)
-                @php
-                    $temCotacao = $p['preco_atual'] !== null;
-                    $valPct = $p['valorizacao_pct'];
-                    $valRs = $p['valorizacao_reais'];
-                    $cls = !$temCotacao ? 'flat' : ($valRs > 0 ? 'up' : ($valRs < 0 ? 'down' : 'flat'));
-                    $arrow = $cls === 'up' ? '▲' : ($cls === 'down' ? '▼' : '•');
-                @endphp
-                <div class="card pos-card">
-                    <div class="pos-card__top">
-                        <span class="pos-card__ticker">{{ $p['ticker'] ?? '—' }}</span>
-                        <span class="badge badge--{{ $cls }}">
-                            {{ $arrow }} {{ $temCotacao && $valPct !== null ? $fmtPct(abs($valPct)) : '—' }}
-                        </span>
-                    </div>
-                    <div class="pos-card__nome">{{ $p['nome'] ?? '—' }}</div>
+        <div class="toolbar toolbar--spaced">
+            <nav class="seg" aria-label="Ordenar posições">
+                <button type="button" data-sort="posicao" aria-pressed="true">Maior posição</button>
+                <button type="button" data-sort="pior" aria-pressed="false">Pior valorização</button>
+                <button type="button" data-sort="melhor" aria-pressed="false">Melhor valorização</button>
+                <button type="button" data-sort="az" aria-pressed="false">Ticker A–Z</button>
+            </nav>
+        </div>
 
-                    <div class="pos-card__medio">
-                        <span class="k">Preço médio</span>
-                        <span class="v">{{ $fmtBrl($p['preco_medio']) }}</span>
-                    </div>
+        <p class="results-meta">{{ $posicoes->count() }} {{ $posicoes->count() === 1 ? 'posição' : 'posições' }}</p>
 
-                    <div class="pos-card__stats">
-                        <div><span class="k">Quantidade</span><span class="v">{{ number_format($p['quantidade'], 0, ',', '.') }}</span></div>
-                        <div><span class="k">Total investido</span><span class="v">{{ $fmtBrl($p['total_investido']) }}</span></div>
-                        <div><span class="k">Preço atual</span><span class="v">{{ $temCotacao ? $fmtBrl($p['preco_atual']) : '—' }}</span></div>
-                        <div><span class="k">Valor atual</span><span class="v">{{ $temCotacao ? $fmtBrl($p['valor_atual']) : '—' }}</span></div>
-                    </div>
-
-                    <div class="pos-card__val valor--{{ $cls }}">
-                        <span class="k">Valorização</span>
-                        <span class="v">{{ $temCotacao ? (($valRs >= 0 ? '+' : '−') . $fmtBrl(abs($valRs))) : 'sem cotação' }}</span>
-                    </div>
-                </div>
+        <div class="asset-grid" id="grid">
+            @foreach ($ranked as $p)
+                <x-holding-card :p="$p" :cor="$corDe[$p['acao_id']]" :peso="$pesoDe($p)" />
             @endforeach
         </div>
     @endif
 @endsection
+
+@push('scripts')
+    @vite('resources/js/pages/carteira.js')
+@endpush

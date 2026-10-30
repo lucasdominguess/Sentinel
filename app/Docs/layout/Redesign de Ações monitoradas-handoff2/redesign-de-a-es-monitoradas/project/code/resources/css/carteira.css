@@ -1,0 +1,42 @@
+/* Específico de Aportes › Meus ativos. Reaproveita .asset-grid de acoes.css. */
+.portfolio-summary { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: 28px; }
+.portfolio-summary > .card { padding: var(--space-6); display: flex; flex-direction: column; }
+.summary { flex: 1 1 420px; }
+.summary__split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin: var(--space-6) 0 0; padding-top: 18px; border-top: 1px solid var(--color-divider); }
+.summary__split > .kpi + .kpi { padding-left: var(--space-4); border-left: 1px solid var(--color-divider); }
+.summary .cost-bar { margin-top: auto; padding-top: 22px; }
+.allocation { flex: 1 1 360px; gap: 18px; }
+.allocation__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.seg--sm > * { height: 28px; padding: 0 var(--space-3); border-radius: var(--radius-sm); font-size: 12.5px; }
+
+.toolbar--spaced { margin-top: var(--space-7); }
+.toolbar__end--sort { flex: 1 1 100%; }
+@media (min-width: 640px) { .toolbar__end--sort { flex: 0 1 320px; } }
+.seg__count { margin-left: 7px; font-size: 11.5px; font-weight: 600; color: var(--color-text-3); font-variant-numeric: tabular-nums; }
+
+/* Card de posição */
+.holding-card { display: flex; flex-direction: column; padding: 18px 18px var(--space-4); }
+.holding-card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.holding-card__id { min-width: 0; }
+.holding-card__line { display: flex; align-items: center; gap: var(--space-2); }
+.holding-card__value { display: flex; flex-direction: column; gap: 6px; margin-top: 18px; }
+.holding-card__value-row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); font-variant-numeric: tabular-nums; }
+.holding-card__value .price__cur { font-size: 13px; }
+.holding-card__value .price__val { font-size: 26px; }
+.holding-card__value .delta { font-size: 13.5px; font-weight: 650; }
+.holding-card .cost-bar { margin-top: var(--space-4); }
+.holding-card__foot { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 14px 0 0; padding-top: var(--space-3); border-top: 1px solid var(--color-divider); }
+.holding-card__foot > div { display: flex; flex-direction: column; gap: 2px; }
+.holding-card__foot > div + div { padding-left: var(--space-3); border-left: 1px solid var(--color-divider); }
+.holding-card__foot dt { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--color-text-3); }
+.holding-card__foot dd { margin: 0; font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Lista densa */
+.holding-row { grid-template-columns: minmax(220px, 1.6fr) 56px 72px 92px 92px 116px 116px 168px 120px; font-size: 13px; }
+.holding-row__id { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.holding-row__val { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-2); font-weight: 650; }
+.holding-row__now { font-size: 14.5px; font-weight: var(--weight-strong); }
+.weight { display: flex; align-items: center; gap: var(--space-2); }
+.weight__track { flex: 1; height: 4px; border-radius: 2px; background: var(--color-surface-2); overflow: hidden; }
+.weight__fill { display: block; height: 100%; background: var(--c, var(--cat-rest)); }
+.weight__pct { min-width: 40px; text-align: right; font-size: 12px; font-weight: 600; }

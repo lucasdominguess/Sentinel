@@ -1,0 +1,44 @@
+/* Específico da lista de ativos monitorados (Ações; serve também para FIIs/ETFs).
+   Requer tokens.css + components.css. */
+
+/* Mini-barra alta/queda no cabeçalho */
+.breadth { display: flex; gap: 2px; height: 4px; min-width: 128px; }
+.breadth span { border-radius: 2px; }
+.breadth__up { background: var(--up); }
+.breadth__down { background: var(--down); opacity: .85; }
+
+/* asset-grid, results-meta e os primitivos price/delta/ticker vivem em components.css (sistema). */
+
+/* Card de ativo */
+.asset-card { display: flex; flex-direction: column; padding: 18px 18px var(--space-4); }
+.asset-card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.asset-card__id { min-width: 0; }
+/* .ticker vive em components.css (sistema) */
+.asset-card__name { margin-top: 2px; font-size: var(--text-sm); color: var(--color-text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.asset-card__price { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); margin-top: 18px; font-variant-numeric: tabular-nums; }
+.asset-card .spark { margin-top: 14px; }
+.asset-card .range { margin-top: 14px; }
+.asset-card__foot { display: grid; grid-template-columns: 1fr 1fr; margin: 14px 0 0; padding-top: var(--space-3); border-top: 1px solid var(--color-divider); }
+.asset-card__foot > div { display: flex; flex-direction: column; gap: 2px; }
+.asset-card__foot > div + div { padding-left: 14px; border-left: 1px solid var(--color-divider); }
+.asset-card__foot dt { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--color-text-3); }
+.asset-card__foot dd { margin: 0; font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.no-results { margin-top: var(--space-5); font-size: var(--text-sm); color: var(--color-text-3); }
+
+/* Tooltip de mín/máx do mês (aparece após ~1s de hover no card) */
+.card-tooltip {
+  position: fixed; z-index: 70; pointer-events: none;
+  min-width: 180px; padding: 10px 12px;
+  background: var(--color-raised); color: var(--color-text);
+  border: 1px solid var(--color-border); border-radius: var(--radius);
+  box-shadow: var(--shadow-lg); font-size: 12.5px;
+  opacity: 0; transform: translateY(4px);
+  transition: opacity var(--dur-fast), transform var(--dur-fast);
+}
+.card-tooltip.show { opacity: 1; transform: none; }
+.card-tooltip .tt-title { font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--color-text-3); margin-bottom: 6px; }
+.card-tooltip .tt-row { display: flex; justify-content: space-between; gap: 16px; font-variant-numeric: tabular-nums; }
+.card-tooltip .tt-row + .tt-row { margin-top: 3px; }
+.card-tooltip .tt-row em { color: var(--color-text-3); font-style: normal; font-size: 11px; }
+.card-tooltip .tt-empty { color: var(--color-text-3); }

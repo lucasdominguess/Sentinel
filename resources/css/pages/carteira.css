@@ -1,0 +1,29 @@
+/* Específico de Aportes › Meus ativos. Usa os primitivos e dataviz de components.css. */
+.portfolio-summary { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: 28px; }
+.portfolio-summary > .card { padding: var(--space-6); display: flex; flex-direction: column; }
+.summary { flex: 1 1 420px; }
+.summary__split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin: var(--space-6) 0 0; padding-top: 18px; border-top: 1px solid var(--color-divider); }
+.summary__split > .kpi + .kpi { padding-left: var(--space-4); border-left: 1px solid var(--color-divider); }
+.summary .cost-bar { margin-top: auto; padding-top: 22px; }
+.allocation { flex: 1 1 360px; gap: 18px; }
+.allocation__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: 4px; }
+
+.toolbar--spaced { margin-top: var(--space-7); }
+
+/* Card de posição */
+.holding-card { display: flex; flex-direction: column; padding: 18px 18px var(--space-4); }
+.holding-card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.holding-card__id { min-width: 0; }
+.holding-card__line { display: flex; align-items: center; gap: var(--space-2); }
+.holding-card__name { margin-top: 2px; font-size: var(--text-sm); color: var(--color-text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.holding-card__value { display: flex; flex-direction: column; gap: 6px; margin-top: 18px; }
+.holding-card__value-row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); font-variant-numeric: tabular-nums; }
+.holding-card__value .price__cur { font-size: 13px; }
+.holding-card__value .price__val { font-size: 26px; }
+.holding-card__value .delta { font-size: 13.5px; font-weight: 650; }
+.holding-card .cost-bar { margin-top: var(--space-4); }
+.holding-card__foot { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 14px 0 0; padding-top: var(--space-3); border-top: 1px solid var(--color-divider); }
+.holding-card__foot > div { display: flex; flex-direction: column; gap: 2px; }
+.holding-card__foot > div + div { padding-left: var(--space-3); border-left: 1px solid var(--color-divider); }
+.holding-card__foot dt { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--color-text-3); }
+.holding-card__foot dd { margin: 0; font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums; }

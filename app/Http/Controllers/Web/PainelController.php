@@ -8,9 +8,12 @@ use App\Contracts\Services\ColetaServiceInterface;
 use App\DTOs\AcaoDTO;
 use App\DTOs\AporteDTO;
 use App\Enums\TipoAtivo;
+use App\Http\Requests\AcaoUpdateRequest;
 use App\Http\Requests\AdicionarTicketRequest;
 use App\Http\Requests\AporteCreateRequest;
+use App\Http\Requests\AporteUpdateRequest;
 use App\Models\Acao;
+use App\Models\Aporte;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
@@ -73,21 +76,7 @@ class PainelController extends Controller
 
     public function formAporte(): View
     {
-        // Mesma lista suspensa do cálculo de cotas, mas o value é o id do ativo (gravado no banco)
-        $paginator = $this->service->index(1000, 1, []);
-
-        $ativos = collect($paginator->items())
-            ->map(fn ($a) => [
-                'id' => $a['id'],
-                'ticker' => $a['ticker'],
-                'nome' => $a['nome'],
-                'preco' => $a['ultima_cotacao']['preco'] ?? null,
-            ])
-            ->sortBy('ticker')
-            ->values()
-            ->all();
-
-        return view('aportes.registrar', ['ativos' => $ativos]);
+        return view('aportes.registrar', ['ativos' => $this->ativosParaSelect()]);
     }
 
     public function storeAporte(AporteCreateRequest $request): RedirectResponse
@@ -97,6 +86,32 @@ class PainelController extends Controller
         return redirect()
             ->route('painel.aportes.create')
             ->with('sucesso', 'Aporte registrado com sucesso.');
+    }
+
+    public function editAporte(Aporte $aporte): View
+    {
+        return view('aportes.editar', [
+            'aporte' => $this->aporteService->show($aporte)->toArray(),
+            'ativos' => $this->ativosParaSelect(),
+        ]);
+    }
+
+    public function updateAporte(Aporte $aporte, AporteUpdateRequest $request): RedirectResponse
+    {
+        $this->aporteService->update($aporte, AporteDTO::fromRequest($request->validated()));
+
+        return redirect()
+            ->route('painel.aportes.index')
+            ->with('sucesso', 'Aporte atualizado com sucesso.');
+    }
+
+    public function destroyAporte(Aporte $aporte): RedirectResponse
+    {
+        $this->aporteService->delete($aporte);
+
+        return redirect()
+            ->route('painel.aportes.index')
+            ->with('sucesso', 'Aporte excluído com sucesso.');
     }
 
     public function meusAtivos(): View
@@ -128,6 +143,69 @@ class PainelController extends Controller
         return redirect()
             ->route('painel.adicionar')
             ->with('sucesso', "Ticker {$data['ticker']} adicionado. Será buscado no próximo update do coletor.");
+    }
+
+    public function ativosIndex(): View
+    {
+        // Todos os ativos cadastrados (monitorados ou não), em ordem alfabética para gestão
+        $paginator = $this->service->index(1000, 1, []);
+
+        $ativos = collect($paginator->items())
+            ->sortBy('ticker')
+            ->values()
+            ->all();
+
+        return view('acoes.cadastro', ['ativos' => $ativos]);
+    }
+
+    public function detalhesAtivo(Acao $acao): View
+    {
+        return view('acoes.detalhes', [
+            'ativo' => $this->service->show($acao)->toArray(),
+            'criadoEm' => $acao->created_at,
+            'atualizadoEm' => $acao->updated_at,
+        ]);
+    }
+
+    public function editAtivo(Acao $acao): View
+    {
+        return view('acoes.editar', ['ativo' => $this->service->show($acao)->toArray()]);
+    }
+
+    public function updateAtivo(Acao $acao, AcaoUpdateRequest $request): RedirectResponse
+    {
+        $this->service->update($acao, AcaoDTO::fromRequest($request->validated()));
+
+        return redirect()
+            ->route('painel.ativos.index')
+            ->with('sucesso', "Ativo {$acao->ticker} atualizado com sucesso.");
+    }
+
+    public function destroyAtivo(Acao $acao): RedirectResponse
+    {
+        $ticker = $acao->ticker;
+        $this->service->delete($acao);
+
+        return redirect()
+            ->route('painel.ativos.index')
+            ->with('sucesso', "Ativo {$ticker} excluído com sucesso.");
+    }
+
+    // Lista de ativos para o <select> dos formulários de aporte: value é o id (gravado no banco)
+    private function ativosParaSelect(): array
+    {
+        $paginator = $this->service->index(1000, 1, []);
+
+        return collect($paginator->items())
+            ->map(fn ($a) => [
+                'id' => $a['id'],
+                'ticker' => $a['ticker'],
+                'nome' => $a['nome'],
+                'preco' => $a['ultima_cotacao']['preco'] ?? null,
+            ])
+            ->sortBy('ticker')
+            ->values()
+            ->all();
     }
 
     private function listar(TipoAtivo $tipo, string $titulo): View

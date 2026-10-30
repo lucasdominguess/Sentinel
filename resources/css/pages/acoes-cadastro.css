@@ -1,0 +1,155 @@
+/* acoes-cadastro.css — tabela de gestão (CRUD) dos ativos cadastrados */
+
+.page-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.page-head h1 {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 16px;
+}
+
+.alert--ok {
+    color: var(--positive);
+    background: var(--positive-bg);
+    border: 1px solid color-mix(in srgb, var(--positive) 35%, transparent);
+}
+
+.empty {
+    padding: 40px;
+    text-align: center;
+}
+
+/* ---------- Barra de busca ---------- */
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.search-wrap {
+    position: relative;
+    width: 320px;
+    max-width: 100%;
+}
+
+.search-ico {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
+}
+
+.search.input {
+    padding-left: 34px;
+}
+
+/* ---------- Tabela ---------- */
+.table-wrap {
+    padding: 6px 4px;
+    overflow-x: auto;
+}
+
+.reg-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.reg-table th,
+.reg-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.reg-table thead th {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.reg-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.reg-table tbody tr:hover {
+    background: var(--surface-2);
+}
+
+.reg-ticker {
+    font-weight: 700;
+}
+
+.badge--off {
+    color: var(--text-muted);
+    background: color-mix(in srgb, var(--text-muted) 14%, transparent);
+}
+
+/* ---------- Ações da linha ---------- */
+.acoes-col {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.reg-acoes {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.reg-acoes form {
+    margin: 0;
+}
+
+.btn-acao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-acao:hover {
+    background: var(--surface-2);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-acao--danger:hover {
+    border-color: var(--negative);
+    color: var(--negative);
+    background: var(--negative-bg);
+}
+
+.no-results {
+    margin-top: 20px;
+    text-align: center;
+}

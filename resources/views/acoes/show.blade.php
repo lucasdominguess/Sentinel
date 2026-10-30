@@ -42,7 +42,7 @@
         </div>
         <div id="chart" class="chart" data-endpoint="{{ url('api/acao/' . $acao['id'] . '/historico') }}"></div>
         <p id="chart-empty" class="muted chart-empty" hidden>
-            Sem histórico diário ainda — rode <code>php artisan sentinel:backfill</code> para carregar a série.
+            Sem histórico diário ainda — rode o backfill do coletor (<code>backfill_history.py</code>) para carregar a série.
         </p>
     </section>
 

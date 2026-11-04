@@ -2,21 +2,25 @@
 
 namespace App\Contracts\Repositories;
 
-use App\Models\Aporte;
+use App\Models\Movimentacao;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
-interface AporteRepositoryInterface
+interface MovimentacaoRepositoryInterface
 {
     public function index(int $perPage = 15, int $page = 1, ?array $filters = []): LengthAwarePaginator;
 
-    public function show(Aporte $aporte): Aporte;
+    public function show(Movimentacao $movimentacao): Movimentacao;
 
-    public function store(array $data): Aporte;
+    public function store(array $data): Movimentacao;
 
-    public function update(Aporte $aporte, array $data): Aporte;
+    public function update(Movimentacao $movimentacao, array $data): Movimentacao;
 
-    public function delete(Aporte $aporte);
+    public function delete(Movimentacao $movimentacao);
 
-    public function posicoes(): Collection;
+    public function doAtivo(int $acaoId): Collection;
+
+    public function daCarteira(?string $ate = null): Collection;
+
+    public function primeiraData(): ?string;
 }

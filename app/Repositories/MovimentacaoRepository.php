@@ -2,68 +2,91 @@
 
 namespace App\Repositories;
 
-use App\Contracts\Repositories\AporteRepositoryInterface;
-use App\Models\Aporte;
+use App\Contracts\Repositories\MovimentacaoRepositoryInterface;
+use App\Models\Movimentacao;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
-class AporteRepository implements AporteRepositoryInterface
+class MovimentacaoRepository implements MovimentacaoRepositoryInterface
 {
     public function __construct(
-        private Aporte $aporteModel,
+        private Movimentacao $movimentacaoModel,
     ) {}
 
     public function index(int $perPage = 15, int $page = 1, ?array $filters = []): LengthAwarePaginator
     {
-        $query = $this->aporteModel->query()->with($this->withRelations());
+        $query = $this->movimentacaoModel->query()->with($this->withRelations());
 
         if (!empty($filters['acao_id'])) {
             $query->where('acao_id', $filters['acao_id']);
         }
 
-        // Compras mais recentes primeiro; empate pelo id mais novo
+        if (!empty($filters['tipo'])) {
+            $query->where('tipo', $filters['tipo']);
+        }
+
+        // Movimentações mais recentes primeiro; empate pelo id mais novo
         return $query
             ->orderByDesc('data')
             ->orderByDesc('id')
             ->paginate($perPage);
     }
 
-    public function show(Aporte $aporte): Aporte
+    public function show(Movimentacao $movimentacao): Movimentacao
     {
-        return $aporte->load($this->withRelations());
+        return $movimentacao->load($this->withRelations());
     }
 
-    public function store(array $data): Aporte
+    public function store(array $data): Movimentacao
     {
-        $aporte = $this->aporteModel->create($data);
+        $movimentacao = $this->movimentacaoModel->create($data);
 
-        return $aporte->load($this->withRelations());
+        return $movimentacao->load($this->withRelations());
     }
 
-    public function update(Aporte $aporte, array $data): Aporte
+    public function update(Movimentacao $movimentacao, array $data): Movimentacao
     {
-        $aporte->update($data);
+        $movimentacao->update($data);
 
-        return $aporte->load($this->withRelations());
+        return $movimentacao->load($this->withRelations());
     }
 
-    public function delete(Aporte $aporte)
+    public function delete(Movimentacao $movimentacao)
     {
-        return $aporte->delete();
+        return $movimentacao->delete();
     }
 
-    // Posição consolidada por ativo: soma quantidade e total investido e já traz
-    // o ativo com a última cotação para o Service derivar preço médio/valorização.
-    public function posicoes(): Collection
+    // Todas as movimentações de um ativo, em ordem cronológica — base da validação de saldo
+    public function doAtivo(int $acaoId): Collection
     {
-        return $this->aporteModel->query()
-            ->selectRaw('acao_id, SUM(quantidade) as quantidade, SUM(total_investido) as total_investido')
-            ->groupBy('acao_id')
-            ->with('acao.ultimaCotacao')
+        return $this->movimentacaoModel->query()
+            ->where('acao_id', $acaoId)
+            ->orderBy('data')
+            ->orderBy('id')
             ->get();
     }
 
-    // Relações carregadas em toda projeção de Aporte — consistência entre os métodos
+    // Movimentações da carteira até a data (inclusive), com o ativo e a última cotação,
+    // para o Service consolidar as posições. Sem data: todo o histórico.
+    public function daCarteira(?string $ate = null): Collection
+    {
+        return $this->movimentacaoModel->query()
+            ->when($ate, fn ($q) => $q->whereDate('data', '<=', $ate))
+            ->with('acao.ultimaCotacao')
+            ->orderBy('data')
+            ->orderBy('id')
+            ->get();
+    }
+
+    // Data da primeira movimentação: antes dela a carteira não existe
+    public function primeiraData(): ?string
+    {
+        $data = $this->movimentacaoModel->query()->min('data');
+
+        return $data ? \Illuminate\Support\Carbon::parse($data)->toDateString() : null;
+    }
+
+    // Relações carregadas em toda projeção de Movimentacao — consistência entre os métodos
     private function withRelations(): array
     {
         return ['acao'];

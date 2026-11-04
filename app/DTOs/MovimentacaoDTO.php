@@ -2,11 +2,12 @@
 
 namespace App\DTOs;
 
-class AporteDTO
+class MovimentacaoDTO
 {
     public function __construct(
         public readonly ?int $acaoId = null,
-        public readonly ?string $precoPago = null,
+        public readonly ?string $tipo = null,
+        public readonly ?string $preco = null,
         public readonly ?int $quantidade = null,
         public readonly ?string $data = null,
     ) {}
@@ -15,7 +16,8 @@ class AporteDTO
     {
         return new self(
             acaoId: $data['acao_id'] ?? null,
-            precoPago: isset($data['preco_pago']) ? (string) $data['preco_pago'] : null,
+            tipo: $data['tipo'] ?? null,
+            preco: isset($data['preco']) ? (string) $data['preco'] : null,
             quantidade: isset($data['quantidade']) ? (int) $data['quantidade'] : null,
             data: $data['data'] ?? null,
         );
@@ -25,7 +27,8 @@ class AporteDTO
     {
         return array_filter([
             'acao_id' => $this->acaoId,
-            'preco_pago' => $this->precoPago,
+            'tipo' => $this->tipo,
+            'preco' => $this->preco,
             'quantidade' => $this->quantidade,
             'data' => $this->data,
         ], fn ($value) => $value !== null);

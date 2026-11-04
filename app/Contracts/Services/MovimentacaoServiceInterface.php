@@ -2,23 +2,23 @@
 
 namespace App\Contracts\Services;
 
-use App\DTOs\AporteDTO;
-use App\DTOs\AporteResponseDTO;
-use App\Models\Aporte;
+use App\DTOs\MovimentacaoDTO;
+use App\DTOs\MovimentacaoResponseDTO;
+use App\Models\Movimentacao;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
-interface AporteServiceInterface
+interface MovimentacaoServiceInterface
 {
     public function index(int $perPage = 15, int $page = 1, ?array $filters = []): LengthAwarePaginator;
 
-    public function show(Aporte $aporte): AporteResponseDTO;
+    public function show(Movimentacao $movimentacao): MovimentacaoResponseDTO;
 
-    public function store(AporteDTO $dto): AporteResponseDTO;
+    public function store(MovimentacaoDTO $dto): MovimentacaoResponseDTO;
 
-    public function update(Aporte $aporte, AporteDTO $dto): AporteResponseDTO;
+    public function update(Movimentacao $movimentacao, MovimentacaoDTO $dto): MovimentacaoResponseDTO;
 
-    public function delete(Aporte $aporte);
+    public function delete(Movimentacao $movimentacao);
 
-    public function posicoes(): Collection;
+    public function posicoes(?string $ate = null, ?array $precos = null): Collection;
 }

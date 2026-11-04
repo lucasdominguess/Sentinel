@@ -10,14 +10,20 @@ Route::get('/etfs', [PainelController::class, 'etfs'])->name('painel.etfs');
 Route::get('/calculo-cotas', [PainelController::class, 'calculoCotas'])->name('painel.calculo');
 Route::get('/porcentagem', [PainelController::class, 'porcentagem'])->name('painel.porcentagem');
 
-// Aportes — registro de compras e posição consolidada da carteira
-Route::get('/aportes/registrar', [PainelController::class, 'formAporte'])->name('painel.aportes.create');
-Route::post('/aportes/registrar', [PainelController::class, 'storeAporte'])->name('painel.aportes.store');
-Route::get('/aportes/meus-ativos', [PainelController::class, 'meusAtivos'])->name('painel.aportes.meus');
-Route::get('/aportes/registros', [PainelController::class, 'aportesIndex'])->name('painel.aportes.index');
-Route::get('/aportes/{aporte}/editar', [PainelController::class, 'editAporte'])->name('painel.aportes.edit');
-Route::put('/aportes/{aporte}', [PainelController::class, 'updateAporte'])->name('painel.aportes.update');
-Route::delete('/aportes/{aporte}', [PainelController::class, 'destroyAporte'])->name('painel.aportes.destroy');
+// Carteira — movimentações (compra/venda) e posição consolidada
+Route::get('/carteira', [PainelController::class, 'carteira'])->name('painel.carteira');
+Route::get('/carteira/evolucao', [PainelController::class, 'evolucao'])->name('painel.carteira.evolucao');
+Route::get('/movimentacoes', [PainelController::class, 'movimentacoesIndex'])->name('painel.movimentacoes.index');
+Route::get('/movimentacoes/registrar', [PainelController::class, 'formMovimentacao'])->name('painel.movimentacoes.create');
+Route::post('/movimentacoes/registrar', [PainelController::class, 'storeMovimentacao'])->name('painel.movimentacoes.store');
+Route::get('/movimentacoes/{movimentacao}/editar', [PainelController::class, 'editMovimentacao'])->name('painel.movimentacoes.edit');
+Route::put('/movimentacoes/{movimentacao}', [PainelController::class, 'updateMovimentacao'])->name('painel.movimentacoes.update');
+Route::delete('/movimentacoes/{movimentacao}', [PainelController::class, 'destroyMovimentacao'])->name('painel.movimentacoes.destroy');
+
+// URLs antigas de "Aportes" (favoritos/links salvos)
+Route::redirect('/aportes/registrar', '/movimentacoes/registrar');
+Route::redirect('/aportes/meus-ativos', '/carteira');
+Route::redirect('/aportes/registros', '/movimentacoes');
 
 Route::get('/adicionar', [PainelController::class, 'formAdicionar'])->name('painel.adicionar');
 Route::post('/adicionar', [PainelController::class, 'adicionar'])->name('painel.adicionar.store');

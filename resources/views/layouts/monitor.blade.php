@@ -41,11 +41,12 @@
     <a href="{{ route('painel.fiis') }}" @if($is('painel.fiis')) aria-current="page" @endif>FIIs</a>
     <a href="{{ route('painel.etfs') }}" @if($is('painel.etfs')) aria-current="page" @endif>ETFs</a>
     <div class="nav__menu" data-menu>
-      <button type="button" class="nav__trigger @if($is('painel.aportes.*')) is-current @endif" aria-expanded="false" aria-controls="menu-aportes">Aportes{!! $chevron !!}</button>
-      <div class="nav__pop" id="menu-aportes" hidden>
-        <a href="{{ route('painel.aportes.create') }}" @if($is('painel.aportes.create')) aria-current="page" @endif>Registrar aporte</a>
-        <a href="{{ route('painel.aportes.meus') }}" @if($is('painel.aportes.meus')) aria-current="page" @endif>Meus ativos</a>
-        <a href="{{ route('painel.aportes.index') }}" @if($is('painel.aportes.index')) aria-current="page" @endif>Registros</a>
+      <button type="button" class="nav__trigger @if($is('painel.carteira*') || $is('painel.movimentacoes.*')) is-current @endif" aria-expanded="false" aria-controls="menu-carteira">Carteira{!! $chevron !!}</button>
+      <div class="nav__pop" id="menu-carteira" hidden>
+        <a href="{{ route('painel.movimentacoes.create') }}" @if($is('painel.movimentacoes.create')) aria-current="page" @endif>Registrar movimentação</a>
+        <a href="{{ route('painel.carteira') }}" @if($is('painel.carteira')) aria-current="page" @endif>Meus ativos</a>
+        <a href="{{ route('painel.carteira.evolucao') }}" @if($is('painel.carteira.evolucao')) aria-current="page" @endif>Evolução do patrimônio</a>
+        <a href="{{ route('painel.movimentacoes.index') }}" @if($is('painel.movimentacoes.index') || $is('painel.movimentacoes.edit')) aria-current="page" @endif>Movimentações</a>
       </div>
     </div>
     <div class="nav__menu" data-menu>
@@ -92,10 +93,11 @@
         <a href="{{ route('painel.porcentagem') }}" @if($is('painel.porcentagem')) aria-current="page" @endif>Cálculo de porcentagem</a>
       </div>
       <div class="drawer__group">
-        <span class="drawer__title">Aportes</span>
-        <a href="{{ route('painel.aportes.create') }}" @if($is('painel.aportes.create')) aria-current="page" @endif>Registrar aporte</a>
-        <a href="{{ route('painel.aportes.meus') }}" @if($is('painel.aportes.meus')) aria-current="page" @endif>Meus ativos</a>
-        <a href="{{ route('painel.aportes.index') }}" @if($is('painel.aportes.index')) aria-current="page" @endif>Registros</a>
+        <span class="drawer__title">Carteira</span>
+        <a href="{{ route('painel.movimentacoes.create') }}" @if($is('painel.movimentacoes.create')) aria-current="page" @endif>Registrar movimentação</a>
+        <a href="{{ route('painel.carteira') }}" @if($is('painel.carteira')) aria-current="page" @endif>Meus ativos</a>
+        <a href="{{ route('painel.carteira.evolucao') }}" @if($is('painel.carteira.evolucao')) aria-current="page" @endif>Evolução do patrimônio</a>
+        <a href="{{ route('painel.movimentacoes.index') }}" @if($is('painel.movimentacoes.index') || $is('painel.movimentacoes.edit')) aria-current="page" @endif>Movimentações</a>
       </div>
       <div class="drawer__group">
         <span class="drawer__title">Cadastro</span>

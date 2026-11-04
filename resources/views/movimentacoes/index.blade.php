@@ -19,6 +19,10 @@
         <a href="{{ route('painel.aportes.create') }}" class="btn-primary">+ Registrar aporte</a>
     </div>
 
+    @if (session('sucesso'))
+        <div class="alert alert--ok">{{ session('sucesso') }}</div>
+    @endif
+
     @if ($aportes->isEmpty())
         <div class="card empty">
             <p>Nenhum aporte registrado ainda.</p>
@@ -34,6 +38,7 @@
                         <th class="num">Preço pago</th>
                         <th class="num">Qtd.</th>
                         <th class="num">Total investido</th>
+                        <th class="acoes-col">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,6 +54,17 @@
                             <td class="num">{{ $fmtBrl($a['preco_pago']) }}</td>
                             <td class="num">{{ number_format($a['quantidade'], 0, ',', '.') }}</td>
                             <td class="num forte">{{ $fmtBrl($a['total_investido']) }}</td>
+                            <td class="acoes-col">
+                                <div class="reg-acoes">
+                                    <a href="{{ route('painel.aportes.edit', $a['id']) }}" class="btn-acao">Editar</a>
+                                    <form method="POST" action="{{ route('painel.aportes.destroy', $a['id']) }}"
+                                          onsubmit="return confirm('Excluir este aporte de {{ $a['ticker'] ?? 'ativo' }}? Esta ação não pode ser desfeita.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-acao btn-acao--danger">Excluir</button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

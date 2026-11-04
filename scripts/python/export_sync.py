@@ -1,9 +1,9 @@
-"""Exporta `acoes` e `aportes` para CSV — rodar no ambiente de DESENVOLVIMENTO.
+"""Exporta `acoes` e `movimentacoes` para CSV — rodar no ambiente de DESENVOLVIMENTO.
 
 Gera dois arquivos em scripts/python/sync/:
-  - acoes.csv    todos os ativos cadastrados (chave natural: ticker)
-  - aportes.csv  todos os aportes, referenciando o ativo pelo TICKER
-                 (nunca pelo id, que difere entre ambientes)
+  - acoes.csv          todos os ativos cadastrados (chave natural: ticker)
+  - movimentacoes.csv  todas as compras/vendas, referenciando o ativo pelo TICKER
+                       (nunca pelo id, que difere entre ambientes)
 
 Fluxo: rode aqui (dev), copie os CSV para o servidor e rode `import_sync.py` lá.
 As credenciais de banco vêm do .env do Laravel (via config.settings / connection).
@@ -39,16 +39,16 @@ SQL_ACOES = """
 """
 ACOES_COLS = ["ticker", "nome", "setor", "segmento", "moeda", "ativo", "tipo"]
 
-# aportes: referenciam o ativo pelo TICKER (join com acoes), não pelo acao_id.
-SQL_APORTES = """
-    SELECT a.ticker, ap.preco_pago, ap.quantidade, ap.total_investido,
-           ap.data, ap.created_at, ap.updated_at
-    FROM aportes ap
-    JOIN acoes a ON a.id = ap.acao_id
-    ORDER BY ap.data, a.ticker
+# movimentacoes: referenciam o ativo pelo TICKER (join com acoes), não pelo acao_id.
+SQL_MOVIMENTACOES = """
+    SELECT a.ticker, m.tipo, m.preco, m.quantidade, m.total,
+           m.data, m.created_at, m.updated_at
+    FROM movimentacoes m
+    JOIN acoes a ON a.id = m.acao_id
+    ORDER BY m.data, m.id
 """
-APORTES_COLS = ["ticker", "preco_pago", "quantidade", "total_investido",
-                "data", "created_at", "updated_at"]
+MOVIMENTACOES_COLS = ["ticker", "tipo", "preco", "quantidade", "total",
+                      "data", "created_at", "updated_at"]
 
 
 def _opt(args: list[str], name: str, default=None):
@@ -79,13 +79,13 @@ def main() -> None:
     try:
         with conn.cursor() as cur:
             n_acoes = _exportar(cur, SQL_ACOES, ACOES_COLS, destino / "acoes.csv")
-            n_aportes = _exportar(cur, SQL_APORTES, APORTES_COLS, destino / "aportes.csv")
+            n_movs = _exportar(cur, SQL_MOVIMENTACOES, MOVIMENTACOES_COLS, destino / "movimentacoes.csv")
     finally:
         conn.close()
 
     logger.info("Exportados %d ativo(s) -> %s", n_acoes, destino / "acoes.csv")
-    logger.info("Exportados %d aporte(s) -> %s", n_aportes, destino / "aportes.csv")
-    print(f"\nOK: {n_acoes} ação(ões) e {n_aportes} aporte(s) exportados em {destino}")
+    logger.info("Exportadas %d movimentação(ões) -> %s", n_movs, destino / "movimentacoes.csv")
+    print(f"\nOK: {n_acoes} ação(ões) e {n_movs} movimentação(ões) exportadas em {destino}")
 
 
 if __name__ == "__main__":

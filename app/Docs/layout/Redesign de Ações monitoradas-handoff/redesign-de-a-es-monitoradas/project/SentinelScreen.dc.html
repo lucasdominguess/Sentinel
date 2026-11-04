@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="{{ vars }}">
+<div style="position:relative;height:{{ outerH }};overflow:hidden;background:var(--color-bg);color:var(--color-text);font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased">
+<div style="height:{{ outerH }};overflow-y:auto">
+
+<header style="position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:20px;height:{{ topH }};padding:0 {{ padX }};background:var(--topbar-bg);backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);border-bottom:1px solid var(--color-divider)">
+  <sc-if value="{{ compact }}" hint-placeholder-val="{{ false }}">
+    <button aria-label="Abrir menu" onClick="{{ openDrawer }}" style="display:grid;place-items:center;width:44px;height:44px;margin:0 -12px 0 -10px;border:0;border-radius:var(--radius);background:transparent;color:var(--color-text);cursor:pointer" style-hover="background:var(--color-surface-2)"><svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><rect x="2" y="4" width="14" height="1.6" rx=".8"></rect><rect x="2" y="8.2" width="14" height="1.6" rx=".8"></rect><rect x="2" y="12.4" width="9" height="1.6" rx=".8"></rect></svg></button>
+  </sc-if>
+  <a href="#" style="display:flex;align-items:center;gap:5px;color:var(--color-text);text-decoration:none;font-weight:750;font-size:18px;letter-spacing:-0.025em">Sentinel<span style="width:6px;height:6px;border-radius:50%;background:var(--color-accent);margin-top:3px"></span></a>
+  <sc-if value="{{ desktop }}" hint-placeholder-val="{{ true }}">
+    <nav aria-label="Principal" style="display:flex;gap:2px;margin-left:8px">
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+        <a href="#" aria-current="{{ n.current }}" style="display:flex;align-items:center;height:34px;padding:0 12px;border-radius:var(--radius);font-size:13.5px;font-weight:{{ n.weight }};color:{{ n.fg }};background:{{ n.bg }};text-decoration:none;transition:color .15s,background .15s">{{ n.label }}</a>
+      </sc-for>
+    </nav>
+  </sc-if>
+  <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+    <button aria-label="Alternar tema" onClick="{{ toggleTheme }}" style="display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--color-border);border-radius:var(--radius);background:var(--color-surface);color:var(--color-text-2);cursor:pointer;transition:color .15s,border-color .15s" style-hover="color:var(--color-text);border-color:var(--color-border-strong)"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M8 1.8a6.2 6.2 0 0 1 0 12.4z" fill="currentColor"></path></svg></button>
+  </div>
+</header>
+
+<main style="max-width:1200px;margin:0 auto;padding:{{ mainPad }}">
+  <section style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px 48px;padding-bottom:28px;border-bottom:1px solid var(--color-divider)">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <span style="font-size:11px;font-weight:650;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent)">Monitor · Renda variável</span>
+      <h1 style="margin:0;font-size:{{ h1 }};line-height:1.05;font-weight:750;letter-spacing:-0.03em">Ações monitoradas</h1>
+    </div>
+    <dl style="display:flex;flex-wrap:wrap;gap:20px 36px;margin:0">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <dt style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-3)">Ativos</dt>
+        <dd style="margin:0;font-size:22px;line-height:28px;font-weight:680;font-variant-numeric:tabular-nums">45</dd>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;min-width:128px">
+        <dt style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-3)">Alta / Queda</dt>
+        <dd style="margin:0;display:flex;align-items:baseline;gap:8px;font-size:22px;line-height:28px;font-weight:680;font-variant-numeric:tabular-nums"><span style="color:var(--up)"><span style="font-size:12px;margin-right:3px">▲</span>11</span><span style="color:var(--color-text-3);font-weight:400">/</span><span style="color:var(--down)"><span style="font-size:12px;margin-right:3px">▼</span>34</span></dd>
+        <div aria-hidden="true" style="display:flex;gap:2px;height:4px"><span style="flex:11;background:var(--up);border-radius:2px"></span><span style="flex:34;background:var(--down);border-radius:2px;opacity:.85"></span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <dt style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-3)">Atualizado</dt>
+        <dd style="margin:0;display:flex;align-items:center;gap:10px;font-size:22px;line-height:28px;font-weight:680;font-variant-numeric:tabular-nums">30/10 · 12:32<span style="display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:600;color:{{ chipFg }};background:{{ chipBg }}"><span style="width:6px;height:6px;border-radius:50%;background:currentColor"></span>{{ chipText }}</span></dd>
+      </div>
+    </dl>
+  </section>
+
+  <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:24px">
+    <div role="tablist" aria-label="Ordenar por" style="display:flex;gap:2px;padding:3px;background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:10px;overflow-x:auto;max-width:100%">
+      <sc-for list="{{ sorts }}" as="s" hint-placeholder-count="4">
+        <button role="tab" aria-selected="{{ s.sel }}" onClick="{{ s.pick }}" style="flex:none;height:34px;padding:0 14px;border:0;border-radius:7px;font-family:inherit;font-size:13px;font-weight:{{ s.weight }};color:{{ s.fg }};background:{{ s.bg }};box-shadow:{{ s.shadow }};cursor:pointer;white-space:nowrap;transition:color .15s,background .15s,box-shadow .15s">{{ s.label }}</button>
+      </sc-for>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex:{{ searchFlex }}">
+      <sc-if value="{{ desktop }}" hint-placeholder-val="{{ true }}">
+        <div role="group" aria-label="Visualização" style="display:flex;gap:2px;padding:3px;background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:10px">
+          <button aria-label="Grade" aria-pressed="{{ isGrid }}" onClick="{{ setGrid }}" style="display:grid;place-items:center;width:34px;height:34px;border:0;border-radius:7px;color:{{ gridFg }};background:{{ gridBg }};box-shadow:{{ gridShadow }};cursor:pointer"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="1" width="5" height="5" rx="1.2"></rect><rect x="8" y="1" width="5" height="5" rx="1.2"></rect><rect x="1" y="8" width="5" height="5" rx="1.2"></rect><rect x="8" y="8" width="5" height="5" rx="1.2"></rect></svg></button>
+          <button aria-label="Lista" aria-pressed="{{ isList }}" onClick="{{ setList }}" style="display:grid;place-items:center;width:34px;height:34px;border:0;border-radius:7px;color:{{ listFg }};background:{{ listBg }};box-shadow:{{ listShadow }};cursor:pointer"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="2" width="12" height="1.6" rx=".8"></rect><rect x="1" y="6.2" width="12" height="1.6" rx=".8"></rect><rect x="1" y="10.4" width="12" height="1.6" rx=".8"></rect></svg></button>
+        </div>
+      </sc-if>
+      <label style="position:relative;display:flex;align-items:center;flex:1;min-width:0">
+        <svg width="15" height="15" viewBox="0 0 16 16" style="position:absolute;left:12px;color:var(--color-text-3);pointer-events:none"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><rect x="10.6" y="10" width="1.8" height="5" rx=".9" transform="rotate(-45 11.5 12.5)" fill="currentColor"></rect></svg>
+        <input type="search" aria-label="Filtrar ações" value="{{ q }}" onChange="{{ onQ }}" placeholder="Filtrar por ticker ou nome…" style="width:100%;height:40px;padding:0 40px 0 36px;font-family:inherit;font-size:14px;color:var(--color-text);background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius);outline:none;transition:border-color .15s,box-shadow .15s" style-focus="border-color:var(--color-accent);box-shadow:0 0 0 3px var(--color-accent-ring)">
+        <kbd style="position:absolute;right:10px;display:grid;place-items:center;min-width:20px;height:20px;padding:0 5px;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--color-text-3);border:1px solid var(--color-border);border-radius:5px;pointer-events:none">/</kbd>
+      </label>
+    </div>
+  </div>
+
+  <sc-if value="{{ isError }}" hint-placeholder-val="{{ false }}">
+    <div role="alert" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin-top:20px;padding:12px 12px 12px 16px;background:var(--down-bg);border:1px solid var(--down-border);border-radius:var(--radius)">
+      <span style="display:grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:var(--down);color:var(--color-bg);font-size:13px;font-weight:800">!</span>
+      <p style="flex:1;min-width:200px;margin:0;font-size:13.5px"><strong style="font-weight:650">Falha ao atualizar cotações.</strong> <span style="color:var(--color-text-2)">Exibindo os últimos valores de 30/10 · 12:32.</span></p>
+      <button style="height:34px;padding:0 14px;font-family:inherit;font-size:13px;font-weight:600;color:var(--color-text);background:var(--color-surface);border:1px solid var(--color-border-strong);border-radius:var(--radius);cursor:pointer" style-hover="border-color:var(--color-text-3)">Tentar novamente</button>
+    </div>
+  </sc-if>
+
+  <div style="display:flex;justify-content:space-between;gap:12px;margin:20px 0 12px;font-size:12.5px;color:var(--color-text-3)">
+    <span>{{ countLabel }}</span>
+  </div>
+
+  <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
+    <div aria-busy="true" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(256px,1fr));gap:16px">
+      <sc-for list="{{ skel }}" as="k" hint-placeholder-count="4">
+        <div style="display:flex;flex-direction:column;gap:12px;padding:18px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg)">
+          <div style="display:flex;justify-content:space-between"><span style="width:72px;height:16px;border-radius:4px;background:var(--color-surface-2)"></span><span style="width:60px;height:22px;border-radius:6px;background:var(--color-surface-2)"></span></div>
+          <span style="width:140px;height:11px;border-radius:4px;background:var(--color-surface-2)"></span>
+          <span style="width:120px;height:28px;margin-top:8px;border-radius:6px;background:var(--color-surface-2)"></span>
+          <span style="height:52px;border-radius:6px;background:var(--color-surface-2)"></span>
+          <span style="height:4px;border-radius:2px;background:var(--color-surface-2)"></span>
+          <div style="display:flex;gap:16px;padding-top:14px;border-top:1px solid var(--color-divider)"><span style="flex:1;height:30px;border-radius:4px;background:var(--color-surface-2)"></span><span style="flex:1;height:30px;border-radius:4px;background:var(--color-surface-2)"></span></div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:64px 24px;border:1px dashed var(--color-border-strong);border-radius:var(--radius-lg)">
+      <div style="display:grid;place-items:center;width:48px;height:48px;margin-bottom:4px;border-radius:50%;background:var(--color-accent-bg);color:var(--color-accent)"><svg width="20" height="20" viewBox="0 0 16 16"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><rect x="10.6" y="10" width="1.8" height="5" rx=".9" transform="rotate(-45 11.5 12.5)" fill="currentColor"></rect></svg></div>
+      <h2 style="margin:0;font-size:17px;font-weight:650">Nenhum ativo encontrado</h2>
+      <p style="margin:0;max-width:380px;color:var(--color-text-2);text-wrap:pretty">Nenhuma ação monitorada corresponde a “{{ q }}”. Confira o ticker ou limpe o filtro.</p>
+      <button onClick="{{ clearQ }}" style="margin-top:8px;height:40px;padding:0 16px;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--color-on-accent);background:var(--color-accent);border:0;border-radius:var(--radius);cursor:pointer" style-hover="filter:brightness(1.08)">Limpar filtro</button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showGrid }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(256px,1fr));gap:16px">
+      <sc-for list="{{ items }}" as="a" hint-placeholder-count="8">
+        <article style="position:relative;display:flex;flex-direction:column;padding:18px 18px 16px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);cursor:pointer;transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s,border-color .18s" style-hover="transform:translateY(-2px);border-color:var(--color-border-strong);box-shadow:var(--shadow-md)">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+            <div style="min-width:0">
+              <div style="font-size:15px;font-weight:700;letter-spacing:.01em">{{ a.ticker }}<span style="color:var(--color-text-3);font-weight:500">.SA</span></div>
+              <div title="{{ a.name }}" style="margin-top:2px;font-size:12.5px;color:var(--color-text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.name }}</div>
+            </div>
+            <span style="flex:none;display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:6px;font-size:12.5px;font-weight:650;font-variant-numeric:tabular-nums;color:{{ a.c }};background:{{ a.bg }}"><span style="font-size:9px">{{ a.arrow }}</span>{{ a.pct }}</span>
+          </div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:18px;font-variant-numeric:tabular-nums">
+            <div style="display:flex;align-items:baseline;gap:4px"><span style="font-size:14px;font-weight:500;color:var(--color-text-3)">R$</span><span style="font-size:30px;line-height:1;font-weight:680;letter-spacing:-0.025em">{{ a.price }}</span></div>
+            <span style="font-size:13px;font-weight:600;color:{{ a.c }}">{{ a.delta }}</span>
+          </div>
+          <div aria-hidden="true" style="position:relative;height:52px;margin-top:14px">
+            <svg viewBox="0 0 240 52" preserveAspectRatio="none" style="display:block;width:100%;height:52px;overflow:visible">
+              <path d="{{ a.area }}" fill="{{ a.c }}" fill-opacity=".09"></path>
+              <line x1="0" x2="240" y1="{{ a.prevY }}" y2="{{ a.prevY }}" stroke="var(--color-text-3)" stroke-width="1" stroke-dasharray="2 3" vector-effect="non-scaling-stroke" opacity=".7"></line>
+              <path d="{{ a.line }}" fill="none" stroke="{{ a.c }}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></path>
+            </svg>
+            <span style="position:absolute;right:-3px;top:{{ a.endTop }};width:7px;height:7px;margin-top:-3.5px;border-radius:50%;background:{{ a.c }};box-shadow:0 0 0 3px var(--color-surface)"></span>
+          </div>
+          <div style="margin-top:14px">
+            <div aria-hidden="true" style="position:relative;height:4px;border-radius:2px;background:var(--color-surface-2)">
+              <span style="position:absolute;top:0;bottom:0;left:{{ a.fillL }};width:{{ a.fillW }};border-radius:2px;background:{{ a.c }};opacity:.55"></span>
+              <span title="Abertura" style="position:absolute;top:-3px;left:{{ a.openPos }};width:2px;height:10px;margin-left:-1px;border-radius:1px;background:var(--color-text-3)"></span>
+              <span style="position:absolute;top:50%;left:{{ a.pos }};width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--color-surface);border:2px solid {{ a.c }}"></span>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11.5px;color:var(--color-text-3);font-variant-numeric:tabular-nums"><span>Mín. {{ a.min }}</span><span>Máx. {{ a.max }}</span></div>
+          </div>
+          <dl style="display:grid;grid-template-columns:1fr 1fr;margin:14px 0 0;padding-top:12px;border-top:1px solid var(--color-divider)">
+            <div style="display:flex;flex-direction:column;gap:2px"><dt style="font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-3)">Fech. ant.</dt><dd style="margin:0;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums">{{ a.prev }}</dd></div>
+            <div style="display:flex;flex-direction:column;gap:2px;padding-left:14px;border-left:1px solid var(--color-divider)"><dt style="font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-3)">Abertura</dt><dd style="margin:0;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums">{{ a.open }}</dd></div>
+          </dl>
+        </article>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showList }}" hint-placeholder-val="{{ false }}">
+    <div role="table" style="background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden">
+      <div role="row" style="display:grid;grid-template-columns:minmax(220px,1.7fr) 128px 108px 100px 96px minmax(170px,1.2fr) 92px 92px;gap:16px;align-items:center;height:40px;padding:0 20px;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-3);background:var(--color-surface-2);border-bottom:1px solid var(--color-divider)">
+        <span>Ativo</span><span>Intradia</span><span style="text-align:right">Preço</span><span style="text-align:right">Var. R$</span><span style="text-align:right">Var. %</span><span>Faixa do dia</span><span style="text-align:right">Fech. ant.</span><span style="text-align:right">Abertura</span>
+      </div>
+      <sc-for list="{{ items }}" as="a" hint-placeholder-count="8">
+        <div role="row" style="display:grid;grid-template-columns:minmax(220px,1.7fr) 128px 108px 100px 96px minmax(170px,1.2fr) 92px 92px;gap:16px;align-items:center;min-height:60px;padding:0 20px;border-bottom:1px solid var(--color-divider);font-variant-numeric:tabular-nums;cursor:pointer;transition:background .12s" style-hover="background:var(--color-surface-2)">
+          <div style="min-width:0"><div style="font-size:14px;font-weight:700">{{ a.ticker }}<span style="color:var(--color-text-3);font-weight:500">.SA</span></div><div style="font-size:12px;color:var(--color-text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.name }}</div></div>
+          <svg viewBox="0 0 240 52" preserveAspectRatio="none" style="display:block;width:128px;height:28px"><line x1="0" x2="240" y1="{{ a.prevY }}" y2="{{ a.prevY }}" stroke="var(--color-text-3)" stroke-dasharray="2 3" vector-effect="non-scaling-stroke" opacity=".7"></line><path d="{{ a.line }}" fill="none" stroke="{{ a.c }}" stroke-width="1.5" vector-effect="non-scaling-stroke"></path></svg>
+          <span style="text-align:right;font-size:15px;font-weight:680">{{ a.price }}</span>
+          <span style="text-align:right;font-size:13px;font-weight:600;color:{{ a.c }}">{{ a.delta }}</span>
+          <span style="justify-self:end;display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:6px;font-size:12.5px;font-weight:650;color:{{ a.c }};background:{{ a.bg }}"><span style="font-size:9px">{{ a.arrow }}</span>{{ a.pct }}</span>
+          <div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--color-text-3)"><span>{{ a.minN }}</span><div style="position:relative;flex:1;height:4px;border-radius:2px;background:var(--color-surface-2)"><span style="position:absolute;top:0;bottom:0;left:{{ a.fillL }};width:{{ a.fillW }};border-radius:2px;background:{{ a.c }};opacity:.55"></span><span style="position:absolute;top:50%;left:{{ a.pos }};width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:var(--color-surface);border:2px solid {{ a.c }}"></span></div><span>{{ a.maxN }}</span></div>
+          <span style="text-align:right;font-size:13px;color:var(--color-text-2)">{{ a.prevN }}</span>
+          <span style="text-align:right;font-size:13px;color:var(--color-text-2)">{{ a.openN }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+</main>
+</div>
+
+<sc-if value="{{ drawerOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;z-index:60">
+    <div onClick="{{ closeDrawer }}" style="position:absolute;inset:0;background:rgba(4,4,8,.55);backdrop-filter:blur(2px)"></div>
+    <aside role="dialog" aria-modal="true" aria-label="Menu" style="position:absolute;top:0;bottom:0;left:0;width:300px;max-width:84%;display:flex;flex-direction:column;background:var(--color-surface);border-right:1px solid var(--color-border);box-shadow:var(--shadow-lg)">
+      <div style="display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 8px 0 20px;border-bottom:1px solid var(--color-divider)">
+        <span style="display:flex;align-items:center;gap:5px;font-weight:750;font-size:18px;letter-spacing:-0.025em">Sentinel<span style="width:6px;height:6px;border-radius:50%;background:var(--color-accent);margin-top:3px"></span></span>
+        <button aria-label="Fechar menu" onClick="{{ closeDrawer }}" style="display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:var(--radius);background:transparent;color:var(--color-text-2);font-size:22px;line-height:1;cursor:pointer" style-hover="background:var(--color-surface-2);color:var(--color-text)">×</button>
+      </div>
+      <nav aria-label="Principal" style="display:flex;flex-direction:column;gap:20px;padding:16px 12px;overflow-y:auto">
+        <sc-for list="{{ drawerGroups }}" as="g" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <span style="padding:0 12px 6px;font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-3)">{{ g.title }}</span>
+            <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="3">
+              <a href="#" style="display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:0 12px;border-radius:var(--radius);font-size:14.5px;font-weight:{{ it.weight }};color:{{ it.fg }};background:{{ it.bg }};text-decoration:none">{{ it.label }}<span style="font-size:12px;font-variant-numeric:tabular-nums;color:var(--color-text-3)">{{ it.count }}</span></a>
+            </sc-for>
+          </div>
+        </sc-for>
+      </nav>
+    </aside>
+  </div>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1400},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;'dark'|'light'&quot;},&quot;viewport&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;desktop&quot;,&quot;tablet&quot;,&quot;mobile&quot;],&quot;default&quot;:&quot;desktop&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;view&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;grid&quot;,&quot;list&quot;],&quot;default&quot;:&quot;grid&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;ok&quot;,&quot;loading&quot;,&quot;empty&quot;,&quot;error&quot;],&quot;default&quot;:&quot;ok&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;drawer&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;query&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;limit&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:12,&quot;tsType&quot;:&quot;number&quot;}}">
+const RAW = [
+  ['BHIA3','Grupo Casas Bahia S.A.',0.66,0.02,3.13,0.63,0.68,0.64,0.65],
+  ['VALE3','Vale S.A.',61.67,1.62,2.70,59.42,62.97,60.05,59.44],
+  ['RECV3','Petroreconcavo S.A.',11.02,0.27,2.51,10.67,11.19,10.75,10.76],
+  ['ALLD3','Allied Tecnologia S.A.',5.06,0.08,1.61,4.93,5.12,4.98,5.00],
+  ['PETR4','Petróleo Brasileiro S.A. - Petrobras',52.99,0.79,1.51,52.36,53.66,52.20,52.45],
+  ['MTRE3','Mitre Realty Empreendimentos e Participações S.A.',2.84,0.02,0.71,2.79,2.89,2.82,2.87],
+  ['JSLG3','JSL S.A.',5.29,0.03,0.57,5.04,5.45,5.26,5.24],
+  ['MELK3','Melnick Desenvolvimento Imobiliário S.A.',2.29,0.01,0.44,2.24,2.35,2.28,2.31],
+  ['B3SA3','B3 S.A. - Brasil, Bolsa, Balcão',13.06,-0.18,-1.36,12.98,13.27,13.24,13.25],
+  ['CVCB3','CVC Brasil Operadora e Agência de Viagens S.A.',2.41,-0.07,-2.82,2.38,2.50,2.48,2.49],
+  ['MGLU3','Magazine Luiza S.A.',8.12,-0.31,-3.68,8.05,8.49,8.43,8.44],
+  ['AZUL4','Azul S.A.',1.87,-0.09,-4.59,1.85,1.98,1.96,1.97],
+].map(r => ({ t:r[0], name:r[1], price:r[2], chg:r[3], pct:r[4], min:r[5], max:r[6], prev:r[7], open:r[8] }));
+
+const BASE = { '--radius-sm':'6px', '--radius':'8px', '--radius-lg':'12px' };
+const THEMES = {
+  dark: { ...BASE, colorScheme:'dark',
+    '--color-bg':'#0a0a0b','--color-surface':'#121214','--color-surface-2':'#1a1a1e','--color-raised':'#26262c',
+    '--color-text':'#f4f4f5','--color-text-2':'#a1a1aa','--color-text-3':'#8b8b95',
+    '--color-divider':'#1f1f24','--color-border':'#24242a','--color-border-strong':'#3a3a42',
+    '--color-accent':'#a78bfa','--color-accent-bg':'rgba(167,139,250,.14)','--color-accent-ring':'rgba(167,139,250,.4)','--color-on-accent':'#0a0a0b',
+    '--up':'#4ade80','--up-bg':'rgba(74,222,128,.12)','--down':'#f87171','--down-bg':'rgba(248,113,113,.10)','--down-border':'rgba(248,113,113,.28)',
+    '--topbar-bg':'rgba(10,10,11,.82)',
+    '--shadow-sm':'0 1px 2px rgba(0,0,0,.5)','--shadow-md':'0 12px 28px -12px rgba(0,0,0,.8), 0 0 0 1px rgba(167,139,250,.10)','--shadow-lg':'0 24px 60px -12px rgba(0,0,0,.85)' },
+  light: { ...BASE, colorScheme:'light',
+    '--color-bg':'#ffffff','--color-surface':'#f7f9fc','--color-surface-2':'#eef2f7','--color-raised':'#ffffff',
+    '--color-text':'#0b1220','--color-text-2':'#475467','--color-text-3':'#5d6779',
+    '--color-divider':'#e4e9f0','--color-border':'#e1e7ef','--color-border-strong':'#c9d2de',
+    '--color-accent':'#2563eb','--color-accent-bg':'rgba(37,99,235,.08)','--color-accent-ring':'rgba(37,99,235,.28)','--color-on-accent':'#ffffff',
+    '--up':'#15803d','--up-bg':'#e6f5eb','--down':'#c81e1e','--down-bg':'#fdeeee','--down-border':'#f6c9c9',
+    '--topbar-bg':'rgba(255,255,255,.86)',
+    '--shadow-sm':'0 1px 2px rgba(15,23,42,.05)','--shadow-md':'0 12px 28px -12px rgba(15,23,42,.18), 0 0 0 1px rgba(37,99,235,.06)','--shadow-lg':'0 24px 60px -12px rgba(15,23,42,.28)' },
+};
+
+const SORTS = [['alta','Maior alta %'],['queda','Maior queda %'],['maior','Maior valor'],['menor','Menor valor']];
+const fmt = v => v.toLocaleString('pt-BR', { minimumFractionDigits:2, maximumFractionDigits:2 });
+const hash = s => { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; };
+const rng = seed => { let a = seed; return () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
+
+function series(a) {
+  const r = rng(hash(a.t)), n = 48, up = a.chg >= 0;
+  const early = () => 3 + Math.floor(r() * 14), late = () => 24 + Math.floor(r() * 18);
+  const anchors = [[0, a.open], [up ? early() : late(), a.min], [up ? late() : early(), a.max], [n - 1, a.price]].sort((x, y) => x[0] - y[0]);
+  const amp = (a.max - a.min) * 0.14, out = [];
+  for (let s = 0; s < anchors.length - 1; s++) {
+    const [i0, v0] = anchors[s], [i1, v1] = anchors[s + 1];
+    for (let i = i0; i < i1; i++) {
+      const t = (i - i0) / Math.max(1, i1 - i0);
+      out[i] = v0 + (v1 - v0) * t + (r() - .5) * 2 * amp * Math.sin(Math.PI * t);
+    }
+  }
+  out[n - 1] = a.price;
+  return out.map(v => Math.min(a.max, Math.max(a.min, v)));
+}
+
+const W = 240, H = 52, P = 4;
+function decorate(a) {
+  const span = Math.max(a.max - a.min, 1e-9);
+  const y = v => P + (a.max - Math.min(a.max, Math.max(a.min, v))) / span * (H - 2 * P);
+  const pts = series(a);
+  const line = pts.map((v, i) => `${i ? 'L' : 'M'}${(i / (pts.length - 1) * W).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+  const up = a.chg > 0, down = a.chg < 0;
+  const pos = (a.price - a.min) / span * 100, openPos = (a.open - a.min) / span * 100;
+  return {
+    ticker: a.t, name: a.name, price: fmt(a.price),
+    delta: (up ? '+' : down ? '−' : '') + 'R$ ' + fmt(Math.abs(a.chg)),
+    pct: fmt(Math.abs(a.pct)) + '%', arrow: up ? '▲' : down ? '▼' : '•',
+    c: up ? 'var(--up)' : down ? 'var(--down)' : 'var(--color-text-2)',
+    bg: up ? 'var(--up-bg)' : down ? 'var(--down-bg)' : 'var(--color-surface-2)',
+    line, area: line + ` L${W} ${H} L0 ${H} Z`, prevY: y(a.prev).toFixed(1),
+    endTop: (y(a.price) / H * 100).toFixed(1) + '%',
+    pos: pos.toFixed(1) + '%', openPos: openPos.toFixed(1) + '%',
+    fillL: Math.min(pos, openPos).toFixed(1) + '%', fillW: Math.abs(pos - openPos).toFixed(1) + '%',
+    min: 'R$ ' + fmt(a.min), max: 'R$ ' + fmt(a.max), prev: 'R$ ' + fmt(a.prev), open: 'R$ ' + fmt(a.open),
+    minN: fmt(a.min), maxN: fmt(a.max), prevN: fmt(a.prev), openN: fmt(a.open),
+  };
+}
+const ALL = RAW.map(a => ({ raw: a, view: decorate(a) }));
+
+class Component extends DCLogic {
+  state = {
+    theme: this.props.theme ?? 'dark', sort: this.props.sort ?? 'alta',
+    q: this.props.query ?? '', view: this.props.view ?? 'grid', drawer: !!this.props.drawer,
+  };
+  componentDidUpdate(prev) {
+    const p = this.props, patch = {};
+    if (p.theme !== prev.theme) patch.theme = p.theme ?? 'dark';
+    if (p.view !== prev.view) patch.view = p.view ?? 'grid';
+    if (p.drawer !== prev.drawer) patch.drawer = !!p.drawer;
+    if (p.query !== prev.query) patch.q = p.query ?? '';
+    if (Object.keys(patch).length) this.setState(patch);
+  }
+  renderVals() {
+    const { theme, sort, q, view, drawer } = this.state;
+    const vp = this.props.viewport ?? 'desktop';
+    const st = this.props.state ?? 'ok';
+    const desktop = vp === 'desktop', mobile = vp === 'mobile';
+    const limit = this.props.limit ?? 12;
+    const cmp = { alta: (a, b) => b.pct - a.pct, queda: (a, b) => a.pct - b.pct, maior: (a, b) => b.price - a.price, menor: (a, b) => a.price - b.price }[sort];
+    const needle = q.trim().toLowerCase();
+    const list = ALL.filter(x => !needle || (x.raw.t + ' ' + x.raw.name).toLowerCase().includes(needle))
+      .sort((a, b) => cmp(a.raw, b.raw)).slice(0, limit).map(x => x.view);
+    const isLoading = st === 'loading', isEmpty = !isLoading && list.length === 0;
+    const effView = desktop ? view : 'grid';
+    const seg = on => ({ fg: on ? 'var(--color-accent)' : 'var(--color-text-2)', bg: on ? 'var(--color-raised)' : 'transparent', shadow: on ? 'var(--shadow-sm), inset 0 0 0 1px var(--color-border)' : 'none' });
+    const nav = (label, on) => ({ label, current: on ? 'page' : undefined, weight: on ? 600 : 500, fg: on ? 'var(--color-accent)' : 'var(--color-text-2)', bg: on ? 'var(--color-accent-bg)' : 'transparent' });
+    const g = seg(effView === 'grid'), l = seg(effView === 'list');
+    const sortLabel = SORTS.find(s => s[0] === sort)[1];
+    return {
+      vars: THEMES[theme] || THEMES.dark,
+      outerH: mobile ? '812px' : 'auto',
+      topH: desktop ? '64px' : '56px', padX: desktop ? '32px' : mobile ? '16px' : '24px',
+      mainPad: desktop ? '44px 32px 72px' : mobile ? '24px 16px 40px' : '32px 24px 48px',
+      h1: desktop ? '40px' : mobile ? '30px' : '34px',
+      desktop, compact: !desktop,
+      searchFlex: mobile ? '1 1 100%' : '0 1 340px',
+      navItems: [nav('Ações', true), nav('FIIs'), nav('ETFs'), nav('Aportes'), nav('Ferramentas')],
+      sorts: SORTS.map(([k, label]) => { const on = k === sort; return { label, sel: on ? 'true' : 'false', weight: on ? 600 : 500, ...seg(on), pick: () => this.setState({ sort: k }) }; }),
+      isGrid: effView === 'grid' ? 'true' : 'false', isList: effView === 'list' ? 'true' : 'false',
+      gridFg: g.fg, gridBg: g.bg, gridShadow: g.shadow, listFg: l.fg, listBg: l.bg, listShadow: l.shadow,
+      setGrid: () => this.setState({ view: 'grid' }), setList: () => this.setState({ view: 'list' }),
+      q, onQ: e => this.setState({ q: e.target.value }), clearQ: () => this.setState({ q: '' }),
+      toggleTheme: () => this.setState({ theme: theme === 'dark' ? 'light' : 'dark' }),
+      isError: st === 'error',
+      chipText: st === 'error' ? 'falha' : isLoading ? 'atualizando' : '53 ok',
+      chipFg: st === 'error' ? 'var(--down)' : isLoading ? 'var(--color-accent)' : 'var(--up)',
+      chipBg: st === 'error' ? 'var(--down-bg)' : isLoading ? 'var(--color-accent-bg)' : 'var(--up-bg)',
+      countLabel: isLoading ? 'Carregando cotações…' : isEmpty ? '0 resultados' : `${list.length} de 45 ativos · ${sortLabel}`,
+      isLoading, isEmpty, skel: Array.from({ length: Math.min(limit, 8) }, (_, i) => i),
+      items: list, showGrid: !isLoading && !isEmpty && effView === 'grid', showList: !isLoading && !isEmpty && effView === 'list',
+      drawerOpen: !desktop && drawer,
+      openDrawer: () => this.setState({ drawer: true }), closeDrawer: () => this.setState({ drawer: false }),
+      drawerGroups: [
+        { title: 'Monitor', items: [nav('Ações', true), nav('FIIs'), nav('ETFs')].map((x, i) => ({ ...x, count: ['45', '', ''][i] })) },
+        { title: 'Aportes', items: [nav('Registrar aporte'), nav('Meus ativos'), nav('Registros')].map(x => ({ ...x, count: '' })) },
+        { title: 'Ferramentas', items: [nav('Cálculo de cotas'), nav('Porcentagem')].map(x => ({ ...x, count: '' })) },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

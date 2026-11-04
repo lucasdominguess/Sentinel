@@ -1,0 +1,86 @@
+/* acoes-detalhes.css — ficha completa de um ativo cadastrado */
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.back-link:hover {
+    color: var(--primary);
+}
+
+.det-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.det-ticker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.det-ticker h1 {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.det-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.det-card {
+    padding: 22px;
+    margin-bottom: 18px;
+}
+
+.det-section {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.det-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 18px 24px;
+}
+
+.det-item dt {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.det-item dd {
+    font-size: 15.5px;
+    font-variant-numeric: tabular-nums;
+}
+
+.det-item dd.forte {
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.det-item dd.up {
+    color: var(--positive);
+    font-weight: 600;
+}
+
+.det-item dd.down {
+    color: var(--negative);
+    font-weight: 600;
+}

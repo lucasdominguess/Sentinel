@@ -27,7 +27,7 @@ scripts/python/
 │   └── telegram_bot.py      # envio de mensagens no Telegram (ainda não usado)
 ├── fetch_stocks.py          # ENTRADA: coleta do dia (snapshot + diário + log)
 ├── backfill_history.py      # ENTRADA: carga histórica dos fechamentos diários
-├── export_sync.py           # ENTRADA: exporta acoes/aportes p/ CSV (rodar no dev)
+├── export_sync.py           # ENTRADA: exporta acoes/movimentacoes p/ CSV (rodar no dev)
 ├── import_sync.py           # ENTRADA: importa os CSV no banco (rodar no servidor)
 ├── requirements.txt
 ├── .env.example
@@ -123,40 +123,43 @@ CRON_TZ=America/Sao_Paulo
 
 ---
 
-## Sincronização dev → servidor (tickets + aportes)
+## Sincronização dev → servidor (tickets + movimentações)
 
-Cadastro de ativos e aportes feito no **dev** é levado ao **servidor** por CSV,
+Cadastro de ativos e movimentações (compras/vendas) feito no **dev** é levado ao **servidor** por CSV,
 sem mexer no banco à mão. Dois scripts:
 
 ```bash
-# 1) no DEV — gera scripts/python/sync/acoes.csv e aportes.csv
+# 1) no DEV — gera scripts/python/sync/acoes.csv e movimentacoes.csv
 .venv/bin/python export_sync.py
 
 # 2) copie a pasta sync/ para o servidor e rode lá
 .venv/bin/python import_sync.py
-#   .venv/bin/python import_sync.py --permitir-duplicados   # força aportes idênticos
+#   .venv/bin/python import_sync.py --permitir-duplicados   # força movimentações idênticas
 ```
 
 Depois de importar, **limpe/apague os CSV** para não reimportar por engano.
 
 Como os conflitos entre ambientes são tratados:
 
-- **`acao_id` difere entre bancos** → o aporte é exportado/importado pelo
+- **`acao_id` difere entre bancos** → a movimentação é exportada/importada pelo
   **ticker** (chave natural, `acoes.ticker` é único); o `import` resolve o
   `acao_id` local. Nenhum id de dev é usado no servidor.
-- **ids de aportes** → não são exportados; o servidor gera ids novos, então não
-  colidem com aportes já registrados lá.
-- **duplicidade** → `acoes` é upsert por ticker (idempotente). `aportes` não têm
-  chave única, então o `import` **pula** um aporte idêntico já existente (mesmo
-  `acao_id` + `preco_pago` + `quantidade` + `data`). Dois aportes reais iguais no
-  mesmo dia só entram com `--permitir-duplicados`.
+- **ids de movimentações** → não são exportados; o servidor gera ids novos, então
+  não colidem com movimentações já registradas lá.
+- **duplicidade** → `acoes` é upsert por ticker (idempotente). `movimentacoes`
+  não têm chave única, então o `import` **pula** uma movimentação idêntica já
+  existente (mesmo `acao_id` + `tipo` + `preco` + `quantidade` + `data`). Duas
+  operações reais iguais no mesmo dia só entram com `--permitir-duplicados`.
 - **metadados de `acoes`** → no conflito, `tipo` e `ativo` vêm do dev (fonte do
   cadastro); `nome/setor/segmento` usam COALESCE para não apagar o que o coletor
   já preencheu no servidor.
-- **pré-requisito** → as migrations precisam estar aplicadas nos dois ambientes.
+- **pré-requisito** → as migrations precisam estar aplicadas nos dois ambientes
+  (a de `movimentacoes` converte a antiga `aportes` em compras).
+- **export antigo** → sem `movimentacoes.csv`, o `import` lê um `aportes.csv`
+  (gerado antes da mudança) e importa cada linha como compra.
 
-Os CSV ficam em `scripts/python/sync/`, **gitignored** (o `aportes.csv` tem
-dados da carteira).
+Os CSV ficam em `scripts/python/sync/`, **gitignored** (o `movimentacoes.csv`
+tem dados da carteira).
 
 ## O que vai para o banco
 
@@ -193,19 +196,19 @@ recuperado na execução seguinte — o buraco se fecha sozinho.
 | `_tickers` | `(args) -> list[str]` | Tickers informados na linha de comando ou, na ausência, os ativos do banco (`listar_acoes_ativas`). |
 | `_opt` | `(args, name, default)` | Extrai o valor de uma opção `--nome=valor`. |
 
-### `export_sync.py` — exporta acoes/aportes para CSV (dev)
+### `export_sync.py` — exporta acoes/movimentacoes para CSV (dev)
 | Função | Assinatura | O que faz |
 | --- | --- | --- |
-| `main` | `() -> None` | Garante a pasta de saída e gera `acoes.csv` e `aportes.csv`. |
+| `main` | `() -> None` | Garante a pasta de saída e gera `acoes.csv` e `movimentacoes.csv`. |
 | `_exportar` | `(cur, sql, colunas, caminho) -> int` | Roda a query e grava cabeçalho + linhas no CSV; retorna a contagem. |
 | `_opt` | `(args, name, default)` | Extrai o valor de uma opção `--nome=valor` (ex.: `--dir`). |
 
 ### `import_sync.py` — importa os CSV no banco (servidor)
 | Função | Assinatura | O que faz |
 | --- | --- | --- |
-| `main` | `() -> None` | Lê os CSV, importa `acoes` (antes) e `aportes` (depois) e imprime o resumo. |
+| `main` | `() -> None` | Lê os CSV, importa `acoes` (antes) e `movimentacoes` (depois) e imprime o resumo. |
 | `importar_acoes` | `(conn, linhas) -> int` | Upsert por ticker (tipo/ativo do dev; metadados via COALESCE). |
-| `importar_aportes` | `(conn, linhas, permitir_dup) -> (inseridos, pulados, sem_ticker)` | Resolve o `acao_id` pelo ticker, pula duplicados (salvo `--permitir-duplicados`) e insere. |
+| `importar_movimentacoes` | `(conn, linhas, permitir_dup) -> (inseridos, pulados, sem_ticker)` | Resolve o `acao_id` pelo ticker, valida o tipo (compra/venda), pula duplicados (salvo `--permitir-duplicados`) e insere. |
 | `_ler_csv` | `(caminho) -> list[dict]\|None` | Lê o CSV como dicts; `None` se o arquivo não existir. |
 | `_none` / `_bool` / `_dec` / `_date` / `_dt` | `(value)` | Normalizam células do CSV (vazio→None, texto→bool/Decimal/date/datetime). |
 | `_opt` | `(args, name, default)` | Extrai o valor de uma opção `--nome=valor`. |

@@ -6,6 +6,8 @@ use App\Contracts\Repositories\AcaoRepositoryInterface;
 use App\Models\Acao;
 use App\Models\Cotacao;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class AcaoRepository implements AcaoRepositoryInterface
 {
@@ -93,6 +95,27 @@ class AcaoRepository implements AcaoRepositoryInterface
         return $paginator->setCollection(
             $paginator->getCollection()->reverse()->values()
         );
+    }
+
+    public function seriesIntradia(array $acaoIds): Collection
+    {
+        if (empty($acaoIds)) {
+            return collect();
+        }
+
+        // Snapshots do último dia com coleta de cada ativo (não do "hoje" global):
+        // um ativo que parou de ser coletado ainda mostra o pregão dele.
+        $ultimoDia = Cotacao::query()
+            ->select('acao_id', DB::raw("date_trunc('day', MAX(capturado_em)) as dia"))
+            ->whereIn('acao_id', $acaoIds)
+            ->groupBy('acao_id');
+
+        return Cotacao::query()
+            ->joinSub($ultimoDia, 'u', 'u.acao_id', '=', 'cotacoes.acao_id')
+            ->whereColumn('cotacoes.capturado_em', '>=', 'u.dia')
+            ->whereNotNull('cotacoes.preco')
+            ->orderBy('cotacoes.capturado_em')
+            ->get(['cotacoes.acao_id', 'cotacoes.preco']);
     }
 
     // Relações carregadas em toda projeção de Acao — garante consistência entre os métodos

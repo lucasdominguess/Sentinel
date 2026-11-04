@@ -73,6 +73,7 @@
         <div class="drawer__group">
             <span class="drawer__group-title">Cadastro</span>
             <a href="{{ route('painel.adicionar') }}" class="drawer__link {{ request()->routeIs('painel.adicionar') ? 'is-active' : '' }}">Adicionar ticket</a>
+            <a href="{{ route('painel.ativos.index') }}" class="drawer__link {{ request()->routeIs('painel.ativos.*') ? 'is-active' : '' }}">Gerenciar ativos</a>
         </div>
     </nav>
 

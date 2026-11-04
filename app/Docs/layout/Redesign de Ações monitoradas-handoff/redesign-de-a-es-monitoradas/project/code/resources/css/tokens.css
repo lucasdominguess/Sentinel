@@ -1,0 +1,81 @@
+/* Sentinel — design tokens. Tema via <html data-theme="light|dark">. */
+:root {
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Espaço (base 4) */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-7: 32px; --space-8: 48px;
+
+  /* Raio */
+  --radius-sm: 6px; --radius: 8px; --radius-lg: 12px; --radius-pill: 999px;
+
+  /* Tipografia */
+  --text-xs: 11px;   --text-sm: 12.5px; --text-base: 14px; --text-md: 15px;
+  --text-lg: 17px;   --text-xl: 22px;   --text-2xl: 30px;  --text-3xl: 40px;
+  --weight-regular: 400; --weight-medium: 500; --weight-semibold: 620;
+  --weight-strong: 680;  --weight-bold: 750;
+  --tracking-tight: -0.03em; --tracking-caps: 0.1em;
+
+  /* Movimento */
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  --dur-fast: 120ms; --dur: 180ms; --dur-slow: 240ms;
+
+  /* Layout */
+  --page-max: 1200px; --page-pad: var(--space-4);
+  --topbar-h: 56px; --drawer-w: 300px; --control-h: 40px; --hit: 44px;
+  --z-topbar: 40; --z-drawer: 60;
+
+  /* ---------- Tema claro: branco / azul ---------- */
+  color-scheme: light;
+  --color-bg: #ffffff;
+  --color-surface: #f7f9fc;
+  --color-surface-2: #eef2f7;
+  --color-raised: #ffffff;
+  --color-text: #0b1220;
+  --color-text-2: #475467;
+  --color-text-3: #5d6779;
+  --color-divider: #e4e9f0;
+  --color-border: #e1e7ef;
+  --color-border-strong: #c9d2de;
+  --color-accent: #2563eb;
+  --color-accent-bg: rgba(37, 99, 235, .08);
+  --color-accent-ring: rgba(37, 99, 235, .28);
+  --color-on-accent: #ffffff;
+  --up: #15803d;   --up-bg: #e6f5eb;
+  --down: #c81e1e; --down-bg: #fdeeee; --down-border: #f6c9c9;
+  --topbar-bg: rgba(255, 255, 255, .86);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, .05);
+  --shadow-md: 0 12px 28px -12px rgba(15, 23, 42, .18), 0 0 0 1px rgba(37, 99, 235, .06);
+  --shadow-lg: 0 24px 60px -12px rgba(15, 23, 42, .28);
+}
+
+/* ---------- Tema escuro: preto / roxo ---------- */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #0a0a0b;
+  --color-surface: #121214;
+  --color-surface-2: #1a1a1e;
+  --color-raised: #26262c;
+  --color-text: #f4f4f5;
+  --color-text-2: #a1a1aa;
+  --color-text-3: #8b8b95;
+  --color-divider: #1f1f24;
+  --color-border: #24242a;
+  --color-border-strong: #3a3a42;
+  --color-accent: #a78bfa;
+  --color-accent-bg: rgba(167, 139, 250, .14);
+  --color-accent-ring: rgba(167, 139, 250, .4);
+  --color-on-accent: #0a0a0b;
+  --up: #4ade80;   --up-bg: rgba(74, 222, 128, .12);
+  --down: #f87171; --down-bg: rgba(248, 113, 113, .10); --down-border: rgba(248, 113, 113, .28);
+  --topbar-bg: rgba(10, 10, 11, .82);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .5);
+  --shadow-md: 0 12px 28px -12px rgba(0, 0, 0, .8), 0 0 0 1px rgba(167, 139, 250, .10);
+  --shadow-lg: 0 24px 60px -12px rgba(0, 0, 0, .85);
+}
+
+@media (min-width: 768px)  { :root { --page-pad: var(--space-6); } }
+@media (min-width: 1024px) { :root { --page-pad: var(--space-7); --topbar-h: 64px; --text-3xl: 40px; } }
+@media (max-width: 1023px) { :root { --text-3xl: 34px; } }
+@media (max-width: 480px)  { :root { --text-3xl: 30px; } }

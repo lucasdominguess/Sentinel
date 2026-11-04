@@ -32,7 +32,7 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && drawer.classList.contains('is-open')) close(); });
   }
 
-  // Menus da nav do topo (Aportes, Ferramentas, Cadastro): abre/fecha e fecha ao clicar fora/Esc
+  // Menus da nav do topo (Carteira, Ferramentas, Cadastro): abre/fecha e fecha ao clicar fora/Esc
   const menus = [...document.querySelectorAll('[data-menu]')];
   const closeMenus = (except) => menus.forEach(m => {
     if (m === except) return;

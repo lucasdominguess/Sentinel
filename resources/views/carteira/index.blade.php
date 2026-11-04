@@ -1,9 +1,13 @@
 {{--
-  Meus ativos — posição consolidada da carteira.
-  Recebe do PainelController@meusAtivos:
-    $posicoes  Collection de arrays (PosicaoResponseDTO::toArray):
-               ['acao_id','ticker','nome','tipo','quantidade','total_investido','preco_medio',
-                'preco_atual','valor_atual','valorizacao_reais','valorizacao_pct']
+  Meus ativos — posição consolidada da carteira, ao vivo ou no fechamento de uma data.
+  Recebe do PainelController@carteira:
+    $posicoes    Collection de arrays (PosicaoResponseDTO::toArray):
+                 ['acao_id','ticker','nome','tipo','quantidade','total_investido','preco_medio',
+                  'preco_atual','valor_atual','valorizacao_reais','valorizacao_pct',
+                  'lucro_realizado','variacao_dia_reais','variacao_dia_pct']
+    $data        ?string 'Y-m-d' escolhida no calendário (null = ao vivo)
+    $pregao      ?string último pregão <= $data, de onde vêm os preços
+    $calendario  ['min','max','pregoes'] para o <x-date-picker>
   Resumo, alocação, cor e peso são derivados aqui (o controller não os envia).
 --}}
 @extends('layouts.monitor')
@@ -61,6 +65,15 @@
 
         $pesoDe = fn ($p) => $atual > 0 ? $atualDe($p) / $atual * 100 : 0;
 
+        // Variação do dia da carteira: soma das variações em R$; % sobre o valor do pregão anterior
+        $dia = (float) $posicoes->sum('variacao_dia_reais');
+        $temDia = $posicoes->whereNotNull('variacao_dia_reais')->isNotEmpty();
+        $diaPct = $temDia && $atual - $dia > 0 ? $dia / ($atual - $dia) * 100 : 0;
+        $diaTrend = $dia > 0.004 ? 'up' : ($dia < -0.004 ? 'down' : 'flat');
+
+        $dataBr = fn ($d) => \Illuminate\Support\Carbon::parse($d)->format('d/m/Y');
+        $fechamento = $data !== null;
+
         // Abas de classe com contagem
         $classes = ['' => 'Todos', 'acao' => 'Ações', 'fii' => 'FIIs', 'etf' => 'ETFs'];
         $contagem = fn ($k) => $k === '' ? $posicoes->count() : $posicoes->where('tipo', $k)->count();
@@ -68,34 +81,72 @@
 
     <section class="page-header">
         <div class="page-header__title">
-            <span class="kicker">Aportes · Carteira</span>
+            <span class="kicker">Carteira · Posição</span>
             <h1 class="h1">Meus ativos</h1>
-            <p class="page-header__lead">Posição consolidada da carteira — preço médio pago e valorização com base na última cotação.</p>
+            <p class="page-header__lead">
+                @if ($fechamento)
+                    Posição da carteira no fechamento de {{ $dataBr($pregao ?? $data) }} — cotas e preço médio até a data, valor pelo fechamento do pregão.
+                @else
+                    Posição consolidada da carteira — preço médio pago e valorização com base na última cotação.
+                @endif
+            </p>
         </div>
         <div class="page-header__actions">
-            <a class="btn btn-ghost" href="{{ route('painel.aportes.index') }}">Registros</a>
-            <a class="btn btn-primary" href="{{ route('painel.aportes.create') }}"><span aria-hidden="true">+</span> Registrar aporte</a>
+            <a class="btn btn-ghost" href="{{ route('painel.movimentacoes.index') }}">Movimentações</a>
+            <a class="btn btn-primary" href="{{ route('painel.movimentacoes.create') }}"><span aria-hidden="true">+</span> Registrar movimentação</a>
         </div>
     </section>
 
-    @if ($posicoes->isEmpty())
+    @if ($calendario['min'])
+        <div class="as-of">
+            <span class="label">Posição em</span>
+            <x-date-picker :action="route('painel.carteira')" :value="$data ?? $calendario['max']"
+                           :min="$calendario['min']" :max="$calendario['max']" :pregoes="$calendario['pregoes']" label="Posição em" />
+            @if ($fechamento)
+                <span class="tag">{{ $pregao && $pregao !== $data ? 'Último pregão antes da data: ' . $dataBr($pregao) : 'Fechamento do pregão' }}</span>
+                <a class="btn btn-ghost btn--sm" href="{{ route('painel.carteira') }}">Voltar para hoje</a>
+            @else
+                <span class="tag">Ao vivo · última cotação</span>
+            @endif
+            <a class="as-of__link" href="{{ route('painel.carteira.evolucao') }}">Evolução do patrimônio <span aria-hidden="true">→</span></a>
+        </div>
+    @endif
+
+    @if ($posicoes->isEmpty() && $fechamento)
+        <div class="empty" style="margin-top:28px">
+            <div class="empty__icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" stroke-linecap="round"/></svg>
+            </div>
+            <h2>Sem posição em {{ $dataBr($data) }}</h2>
+            <p>Nenhum ativo estava na carteira nessa data. Escolha outro dia no calendário.</p>
+            <a class="btn btn-primary" href="{{ route('painel.carteira') }}">Voltar para hoje</a>
+        </div>
+    @elseif ($posicoes->isEmpty())
         <div class="empty" style="margin-top:28px">
             <div class="empty__icon" aria-hidden="true">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9v9z"/><path d="M12 3a9 9 0 0 1 9 9h-9z"/></svg>
             </div>
             <h2>Nenhum ativo na carteira</h2>
-            <p>Registre seu primeiro aporte para acompanhar preço médio, valor atual e valorização.</p>
-            <a class="btn btn-primary" href="{{ route('painel.aportes.create') }}">Registrar aporte</a>
+            <p>Registre sua primeira compra para acompanhar preço médio, valor atual e valorização.</p>
+            <a class="btn btn-primary" href="{{ route('painel.movimentacoes.create') }}">Registrar movimentação</a>
         </div>
     @else
         <div class="portfolio-summary">
             <section class="card summary" aria-label="Resumo da carteira">
                 <dl style="margin:0">
-                    <div class="kpi kpi--hero"><dt>Valor atual</dt><dd><span class="price__cur">R$</span>{{ $brl($atual) }}</dd></div>
+                    <div class="kpi kpi--hero"><dt>{{ $fechamento ? 'Valor em ' . $dataBr($data) : 'Valor atual' }}</dt><dd><span class="price__cur">R$</span>{{ $brl($atual) }}</dd></div>
                 </dl>
                 <dl class="summary__split">
                     <div class="kpi"><dt>Total investido</dt><dd>R$ {{ $brl($investido) }}</dd></div>
                     <div class="kpi"><dt>Valorização</dt><dd class="tone-{{ $trend }}">{{ $sinal }}R$ {{ $brl(abs($val)) }} <x-badge-var :pct="$pct" /></dd></div>
+                    <div class="kpi">
+                        <dt>{{ $fechamento ? 'No pregão' : 'Hoje' }}</dt>
+                        @if ($temDia)
+                            <dd class="tone-{{ $diaTrend }}">{{ ['up' => '+', 'down' => '−', 'flat' => ''][$diaTrend] }}R$ {{ $brl(abs($dia)) }} <x-badge-var :pct="$diaPct" /></dd>
+                        @else
+                            <dd class="tone-flat">—</dd>
+                        @endif
+                    </div>
                 </dl>
                 <x-cost-bar size="lg" :cost="$investido" :value="$atual"
                             left="Valor atual = {{ number_format($atual / max($investido, 1e-9) * 100, 1, ',', '.') }}% do custo" right="Custo" />
@@ -142,7 +193,7 @@
 
         <div class="asset-grid" id="grid">
             @foreach ($ranked as $p)
-                <x-holding-card :p="$p" :cor="$corDe[$p['acao_id']]" :peso="$pesoDe($p)" />
+                <x-holding-card :p="$p" :cor="$corDe[$p['acao_id']]" :peso="$pesoDe($p)" :fechamento="$fechamento" />
             @endforeach
         </div>
 
@@ -152,9 +203,9 @@
                 <span role="columnheader">Classe</span>
                 <span role="columnheader" class="r">Qtd.</span>
                 <span role="columnheader" class="r">Preço médio</span>
-                <span role="columnheader" class="r">Preço atual</span>
+                <span role="columnheader" class="r">{{ $fechamento ? 'Fechamento' : 'Preço atual' }}</span>
                 <span role="columnheader" class="r">Investido</span>
-                <span role="columnheader" class="r">Valor atual</span>
+                <span role="columnheader" class="r">{{ $fechamento ? 'Valor' : 'Valor atual' }}</span>
                 <span role="columnheader" class="r">Valorização</span>
                 <span role="columnheader">Peso</span>
             </div>
@@ -166,5 +217,5 @@
 @endsection
 
 @push('scripts')
-    @vite('resources/js/pages/carteira.js')
+    @vite(['resources/js/pages/carteira.js', 'resources/js/components/date-picker.js'])
 @endpush

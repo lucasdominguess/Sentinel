@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\AcaoController;
-use App\Http\Controllers\AporteController;
+use App\Http\Controllers\MovimentacaoController;
 use App\Http\Controllers\TestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -20,4 +20,4 @@ Route::apiResource('acao', AcaoController::class);
 
 Route::get('/test', [TestController::class, 'index']);
 
-Route::apiResource('aporte', AporteController::class);
+Route::apiResource('movimentacao', MovimentacaoController::class);

@@ -67,7 +67,7 @@
                                     <a href="{{ route('painel.ativos.show', $ativo['id']) }}" class="btn-acao">Detalhes</a>
                                     <a href="{{ route('painel.ativos.edit', $ativo['id']) }}" class="btn-acao">Editar</a>
                                     <form method="POST" action="{{ route('painel.ativos.destroy', $ativo['id']) }}"
-                                          onsubmit="return confirm('Excluir {{ $ativo['ticker'] }}? Isso remove também TODAS as cotações e aportes deste ativo. Esta ação não pode ser desfeita.');">
+                                          onsubmit="return confirm('Excluir {{ $ativo['ticker'] }}? Isso remove também TODAS as cotações e movimentações deste ativo. Esta ação não pode ser desfeita.');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-acao btn-acao--danger">Excluir</button>

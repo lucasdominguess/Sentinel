@@ -1,4 +1,4 @@
-/* aportes-registros.css — tabela paginada dos aportes registrados */
+/* movimentacoes-index.css — tabela paginada das movimentações (compras e vendas) */
 
 .page-head {
     display: flex;
@@ -25,6 +25,12 @@
     font-size: 14px;
     font-weight: 500;
     margin-bottom: 16px;
+}
+
+.alert--erro {
+    color: var(--negative);
+    background: var(--negative-bg);
+    border: 1px solid color-mix(in srgb, var(--negative) 35%, transparent);
 }
 
 .alert--ok {
@@ -85,6 +91,15 @@
     display: block;
     font-size: 12px;
     font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Ativo absorve o espaço livre e trunca o nome (o título mostra o completo):
+   nomes longos de ETF/FII não empurram a coluna de ações para fora */
+.reg-table .reg-ativo {
+    width: 100%;
+    max-width: 0;
 }
 
 /* ---------- Ações da linha (editar / excluir) ---------- */

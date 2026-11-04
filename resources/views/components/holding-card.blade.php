@@ -1,7 +1,8 @@
 {{-- Card de posição da carteira. Recebe o array real de PosicaoResponseDTO::toArray():
      ['acao_id','ticker','nome','tipo','quantidade','total_investido','preco_medio','preco_atual','valor_atual','valorizacao_reais','valorizacao_pct']
-     + $cor (var(--cat-n)) e $peso (%) calculados na view. --}}
-@props(['p', 'cor' => 'var(--cat-rest)', 'peso' => 0])
+     + $cor (var(--cat-n)) e $peso (%) calculados na view; $fechamento = foto de uma data passada
+     (rótulos falam do fechamento do dia, não da cotação atual). --}}
+@props(['p', 'cor' => 'var(--cat-rest)', 'peso' => 0, 'fechamento' => false])
 @php
   $brl = fn ($v) => number_format((float) $v, 2, ',', '.');
   $temCotacao = ($p['preco_atual'] ?? null) !== null;
@@ -36,7 +37,7 @@
   </div>
 
   <div class="holding-card__value">
-    <span class="label">Valor atual</span>
+    <span class="label">{{ $fechamento ? 'Valor no fechamento' : 'Valor atual' }}</span>
     <div class="holding-card__value-row">
       <div class="price"><span class="price__cur">R$</span><span class="price__val">{{ $brl($valorAtual) }}</span></div>
       @if ($temCotacao)
@@ -54,6 +55,6 @@
   <dl class="holding-card__foot">
     <div><dt>Qtd.</dt><dd>{{ number_format($p['quantidade'], 0, ',', '.') }}</dd></div>
     <div><dt>Preço médio</dt><dd>R$ {{ $brl($p['preco_medio']) }}</dd></div>
-    <div><dt>Preço atual</dt><dd>{{ $temCotacao ? 'R$ ' . $brl($p['preco_atual']) : '—' }}</dd></div>
+    <div><dt>{{ $fechamento ? 'Fechamento' : 'Preço atual' }}</dt><dd>{{ $temCotacao ? 'R$ ' . $brl($p['preco_atual']) : '—' }}</dd></div>
   </dl>
 </article>

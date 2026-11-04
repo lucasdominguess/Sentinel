@@ -1,4 +1,4 @@
-/* aportes-registrar.css — formulário de registro de aporte */
+/* movimentacoes-form.css — formulário de registro/edição de movimentação (compra/venda) */
 
 .page-head {
     display: flex;
@@ -28,7 +28,7 @@
     border: 1px solid color-mix(in srgb, var(--positive) 35%, transparent);
 }
 
-.aporte-card {
+.mov-card {
     padding: 22px;
     display: flex;
     flex-direction: column;
@@ -71,13 +71,13 @@
     color: var(--negative);
 }
 
-.aporte-grid {
+.mov-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 16px;
 }
 
-.aporte-total {
+.mov-total {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -87,7 +87,7 @@
     background: var(--surface-2);
 }
 
-.aporte-total strong {
+.mov-total strong {
     font-size: 22px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
@@ -118,4 +118,60 @@
 
 .btn-ghost:hover {
     background: var(--surface-2);
+}
+
+/* ---------- Tipo: Compra | Venda ---------- */
+.tipo-toggle {
+    display: inline-flex;
+    align-self: flex-start;
+    gap: 2px;
+    margin: 0;
+    padding: 3px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface-2);
+}
+
+.tipo-toggle__opt {
+    position: relative;
+    cursor: pointer;
+}
+
+.tipo-toggle__opt input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.tipo-toggle__opt span {
+    display: inline-flex;
+    align-items: center;
+    height: 34px;
+    padding: 0 18px;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tipo-toggle__opt input:checked + span {
+    background: var(--surface);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .25), inset 0 0 0 1px var(--border);
+}
+
+.tipo-toggle__opt--compra input:checked + span { color: var(--positive); }
+.tipo-toggle__opt--venda input:checked + span { color: var(--negative); }
+
+.tipo-toggle__opt input:focus-visible + span {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+.field__hint {
+    font-size: 12.5px;
+    color: var(--text-muted);
+}
+
+.field__hint.is-warn {
+    color: var(--negative);
 }

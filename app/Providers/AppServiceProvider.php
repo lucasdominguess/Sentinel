@@ -29,10 +29,14 @@ use App\Contracts\Services\AcaoServiceInterface;
 use App\Services\AcaoService;
 use App\Contracts\Repositories\AcaoRepositoryInterface;
 use App\Repositories\AcaoRepository;
-use App\Contracts\Services\AporteServiceInterface;
-use App\Services\AporteService;
-use App\Contracts\Repositories\AporteRepositoryInterface;
-use App\Repositories\AporteRepository;
+use App\Contracts\Services\MovimentacaoServiceInterface;
+use App\Services\MovimentacaoService;
+use App\Contracts\Repositories\MovimentacaoRepositoryInterface;
+use App\Repositories\MovimentacaoRepository;
+use App\Contracts\Services\CarteiraServiceInterface;
+use App\Services\CarteiraService;
+use App\Contracts\Repositories\CotacaoDiariaRepositoryInterface;
+use App\Repositories\CotacaoDiariaRepository;
 use App\Contracts\Services\ColetaServiceInterface;
 use App\Services\ColetaService;
 use App\Contracts\Repositories\ColetaRepositoryInterface;
@@ -103,12 +107,20 @@ class AppServiceProvider extends ServiceProvider
             AcaoRepository::class
         );
         $this->app->bind(
-            AporteServiceInterface::class,
-            AporteService::class
+            MovimentacaoServiceInterface::class,
+            MovimentacaoService::class
         );
         $this->app->bind(
-            AporteRepositoryInterface::class,
-            AporteRepository::class
+            MovimentacaoRepositoryInterface::class,
+            MovimentacaoRepository::class
+        );
+        $this->app->bind(
+            CarteiraServiceInterface::class,
+            CarteiraService::class
+        );
+        $this->app->bind(
+            CotacaoDiariaRepositoryInterface::class,
+            CotacaoDiariaRepository::class
         );
         $this->app->bind(
             ColetaServiceInterface::class,

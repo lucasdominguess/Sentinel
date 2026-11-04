@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FilterAporteIndexRequest extends FormRequest
+class FilterMovimentacaoIndexRequest extends FormRequest
 {
     public function authorize(): bool
     {

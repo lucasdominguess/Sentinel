@@ -3,17 +3,21 @@
 namespace App\Http\Controllers\Web;
 
 use App\Contracts\Services\AcaoServiceInterface;
-use App\Contracts\Services\AporteServiceInterface;
+use App\Contracts\Services\CarteiraServiceInterface;
+use App\Contracts\Services\MovimentacaoServiceInterface;
 use App\Contracts\Services\ColetaServiceInterface;
 use App\DTOs\AcaoDTO;
-use App\DTOs\AporteDTO;
+use App\DTOs\MovimentacaoDTO;
 use App\Enums\TipoAtivo;
+use App\Enums\TipoMovimentacao;
 use App\Http\Requests\AcaoUpdateRequest;
 use App\Http\Requests\AdicionarTicketRequest;
-use App\Http\Requests\AporteCreateRequest;
-use App\Http\Requests\AporteUpdateRequest;
+use App\Http\Requests\CarteiraRequest;
+use App\Http\Requests\EvolucaoRequest;
+use App\Http\Requests\MovimentacaoCreateRequest;
+use App\Http\Requests\MovimentacaoUpdateRequest;
 use App\Models\Acao;
-use App\Models\Aporte;
+use App\Models\Movimentacao;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
@@ -24,8 +28,9 @@ class PainelController extends Controller
 {
     public function __construct(
         private AcaoServiceInterface $service,
-        private AporteServiceInterface $aporteService,
+        private MovimentacaoServiceInterface $movimentacaoService,
         private ColetaServiceInterface $coletaService,
+        private CarteiraServiceInterface $carteiraService,
     ) {}
 
     public function index(): View
@@ -74,58 +79,80 @@ class PainelController extends Controller
         return view('acoes.porcentagem');
     }
 
-    public function formAporte(): View
+    public function formMovimentacao(): View
     {
-        return view('aportes.registrar', ['ativos' => $this->ativosParaSelect()]);
+        return view('movimentacoes.registrar', ['ativos' => $this->ativosParaSelect()]);
     }
 
-    public function storeAporte(AporteCreateRequest $request): RedirectResponse
+    public function storeMovimentacao(MovimentacaoCreateRequest $request): RedirectResponse
     {
-        $this->aporteService->store(AporteDTO::fromRequest($request->validated()));
+        $dto = $this->movimentacaoService->store(MovimentacaoDTO::fromRequest($request->validated()));
 
         return redirect()
-            ->route('painel.aportes.create')
-            ->with('sucesso', 'Aporte registrado com sucesso.');
+            ->route('painel.movimentacoes.create')
+            ->with('sucesso', TipoMovimentacao::from($dto->tipo)->label() . " de {$dto->ticker} registrada com sucesso.");
     }
 
-    public function editAporte(Aporte $aporte): View
+    public function editMovimentacao(Movimentacao $movimentacao): View
     {
-        return view('aportes.editar', [
-            'aporte' => $this->aporteService->show($aporte)->toArray(),
+        return view('movimentacoes.editar', [
+            'movimentacao' => $this->movimentacaoService->show($movimentacao)->toArray(),
             'ativos' => $this->ativosParaSelect(),
         ]);
     }
 
-    public function updateAporte(Aporte $aporte, AporteUpdateRequest $request): RedirectResponse
+    public function updateMovimentacao(Movimentacao $movimentacao, MovimentacaoUpdateRequest $request): RedirectResponse
     {
-        $this->aporteService->update($aporte, AporteDTO::fromRequest($request->validated()));
+        $this->movimentacaoService->update($movimentacao, MovimentacaoDTO::fromRequest($request->validated()));
 
         return redirect()
-            ->route('painel.aportes.index')
-            ->with('sucesso', 'Aporte atualizado com sucesso.');
+            ->route('painel.movimentacoes.index')
+            ->with('sucesso', 'Movimentação atualizada com sucesso.');
     }
 
-    public function destroyAporte(Aporte $aporte): RedirectResponse
+    public function destroyMovimentacao(Movimentacao $movimentacao): RedirectResponse
     {
-        $this->aporteService->delete($aporte);
+        $this->movimentacaoService->delete($movimentacao);
 
         return redirect()
-            ->route('painel.aportes.index')
-            ->with('sucesso', 'Aporte excluído com sucesso.');
+            ->route('painel.movimentacoes.index')
+            ->with('sucesso', 'Movimentação excluída com sucesso.');
     }
 
-    public function meusAtivos(): View
+    public function carteira(CarteiraRequest $request): View
     {
-        $posicoes = $this->aporteService->posicoes();
+        // Data passada: foto no fechamento daquele dia; sem data (ou hoje): ao vivo
+        $data = $request->validated('data');
+        $foto = $data && $data < today()->toDateString()
+            ? $this->carteiraService->fotoDoDia($data)
+            : null;
 
-        return view('aportes.meus-ativos', ['posicoes' => $posicoes]);
+        return view('carteira.index', [
+            'posicoes' => $foto['posicoes'] ?? $this->movimentacaoService->posicoes(),
+            'data' => $foto ? $data : null,
+            'pregao' => $foto['pregao'] ?? null,
+            'calendario' => $this->carteiraService->calendario(),
+        ]);
     }
 
-    public function aportesIndex(): View
+    public function evolucao(EvolucaoRequest $request): View
     {
-        $aportes = $this->aporteService->index(15, (int) request('page', 1));
+        $intervalo = $request->intervalo();
 
-        return view('aportes.registros', ['aportes' => $aportes]);
+        return view('carteira.evolucao', [
+            'evolucao' => $this->carteiraService->evolucao($intervalo['de'], $intervalo['ate']),
+            'periodo' => $intervalo['periodo'],
+            'periodos' => EvolucaoRequest::PERIODOS,
+            'pedido' => $intervalo,
+            'calendario' => $this->carteiraService->calendario(),
+        ]);
+    }
+
+    public function movimentacoesIndex(): View
+    {
+        $movimentacoes = $this->movimentacaoService->index(15, (int) request('page', 1));
+
+        return view('movimentacoes.index', ['movimentacoes' => $movimentacoes]);
     }
 
     public function formAdicionar(): View
@@ -191,10 +218,12 @@ class PainelController extends Controller
             ->with('sucesso', "Ativo {$ticker} excluído com sucesso.");
     }
 
-    // Lista de ativos para o <select> dos formulários de aporte: value é o id (gravado no banco)
+    // Lista de ativos para o <select> dos formulários de movimentação: value é o id (gravado
+    // no banco); 'cotas' é o saldo atual, mostrado como referência ao registrar uma venda
     private function ativosParaSelect(): array
     {
         $paginator = $this->service->index(1000, 1, []);
+        $cotas = $this->movimentacaoService->posicoes()->pluck('quantidade', 'acao_id');
 
         return collect($paginator->items())
             ->map(fn ($a) => [
@@ -202,6 +231,7 @@ class PainelController extends Controller
                 'ticker' => $a['ticker'],
                 'nome' => $a['nome'],
                 'preco' => $a['ultima_cotacao']['preco'] ?? null,
+                'cotas' => (int) ($cotas[$a['id']] ?? 0),
             ])
             ->sortBy('ticker')
             ->values()

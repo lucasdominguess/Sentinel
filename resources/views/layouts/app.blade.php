@@ -64,10 +64,11 @@
         </div>
 
         <div class="drawer__group">
-            <span class="drawer__group-title">Aportes</span>
-            <a href="{{ route('painel.aportes.create') }}" class="drawer__link {{ request()->routeIs('painel.aportes.create') ? 'is-active' : '' }}">Registrar aporte</a>
-            <a href="{{ route('painel.aportes.meus') }}" class="drawer__link {{ request()->routeIs('painel.aportes.meus') ? 'is-active' : '' }}">Meus ativos</a>
-            <a href="{{ route('painel.aportes.index') }}" class="drawer__link {{ request()->routeIs('painel.aportes.index') ? 'is-active' : '' }}">Registros</a>
+            <span class="drawer__group-title">Carteira</span>
+            <a href="{{ route('painel.movimentacoes.create') }}" class="drawer__link {{ request()->routeIs('painel.movimentacoes.create') ? 'is-active' : '' }}">Registrar movimentação</a>
+            <a href="{{ route('painel.carteira') }}" class="drawer__link {{ request()->routeIs('painel.carteira') ? 'is-active' : '' }}">Meus ativos</a>
+            <a href="{{ route('painel.carteira.evolucao') }}" class="drawer__link {{ request()->routeIs('painel.carteira.evolucao') ? 'is-active' : '' }}">Evolução do patrimônio</a>
+            <a href="{{ route('painel.movimentacoes.index') }}" class="drawer__link {{ request()->routeIs('painel.movimentacoes.index', 'painel.movimentacoes.edit') ? 'is-active' : '' }}">Movimentações</a>
         </div>
 
         <div class="drawer__group">

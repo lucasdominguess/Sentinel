@@ -37,9 +37,9 @@ class Acao extends Model
         return $this->hasMany(CotacaoDiaria::class);
     }
 
-    public function aportes(): HasMany
+    public function movimentacoes(): HasMany
     {
-        return $this->hasMany(Aporte::class);
+        return $this->hasMany(Movimentacao::class);
     }
 
     // Última cotação coletada — usada na listagem e no card do ativo

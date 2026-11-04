@@ -2,57 +2,57 @@
 
 namespace App\Http\Controllers;
 
-use App\Contracts\Services\AporteServiceInterface;
-use App\DTOs\AporteDTO;
+use App\Contracts\Services\MovimentacaoServiceInterface;
+use App\DTOs\MovimentacaoDTO;
 use App\Helpers\ApiResponse;
-use App\Http\Requests\AporteCreateRequest;
-use App\Http\Requests\AporteUpdateRequest;
-use App\Http\Requests\FilterAporteIndexRequest;
-use App\Models\Aporte;
+use App\Http\Requests\MovimentacaoCreateRequest;
+use App\Http\Requests\MovimentacaoUpdateRequest;
+use App\Http\Requests\FilterMovimentacaoIndexRequest;
+use App\Models\Movimentacao;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 
-class AporteController extends Controller
+class MovimentacaoController extends Controller
 {
     public function __construct(
-        private AporteServiceInterface $service,
+        private MovimentacaoServiceInterface $service,
     ) {}
 
-    public function index(FilterAporteIndexRequest $request): JsonResponse
+    public function index(FilterMovimentacaoIndexRequest $request): JsonResponse
     {
         $data = $request->validated();
         $paginator = $this->service->index($data['perPage'], $data['page'], $data['filters']);
 
-        return ApiResponse::paginated($paginator, 'Aportes recuperados com sucesso');
+        return ApiResponse::paginated($paginator, 'Movimentações recuperadas com sucesso');
     }
 
-    public function show(Aporte $aporte): JsonResponse
+    public function show(Movimentacao $movimentacao): JsonResponse
     {
-        $aporteResponse = $this->service->show($aporte);
+        $movimentacaoResponse = $this->service->show($movimentacao);
 
-        return ApiResponse::success($aporteResponse, 'Aporte recuperado com sucesso');
+        return ApiResponse::success($movimentacaoResponse, 'Movimentação recuperada com sucesso');
     }
 
-    public function store(AporteCreateRequest $request): JsonResponse
-    {
-        $data = $request->validated();
-        $aporteResponse = $this->service->store(AporteDTO::fromRequest($data));
-
-        return ApiResponse::created($aporteResponse, 'Aporte criado com sucesso');
-    }
-
-    public function update(Aporte $aporte, AporteUpdateRequest $request): JsonResponse
+    public function store(MovimentacaoCreateRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $aporteResponse = $this->service->update($aporte, AporteDTO::fromRequest($data));
+        $movimentacaoResponse = $this->service->store(MovimentacaoDTO::fromRequest($data));
 
-        return ApiResponse::success($aporteResponse, 'Aporte atualizado com sucesso');
+        return ApiResponse::created($movimentacaoResponse, 'Movimentação criada com sucesso');
     }
 
-    public function destroy(Aporte $aporte): JsonResponse
+    public function update(Movimentacao $movimentacao, MovimentacaoUpdateRequest $request): JsonResponse
     {
-        $this->service->delete($aporte);
+        $data = $request->validated();
+        $movimentacaoResponse = $this->service->update($movimentacao, MovimentacaoDTO::fromRequest($data));
 
-        return ApiResponse::success(null, 'Aporte deletado com sucesso');
+        return ApiResponse::success($movimentacaoResponse, 'Movimentação atualizada com sucesso');
+    }
+
+    public function destroy(Movimentacao $movimentacao): JsonResponse
+    {
+        $this->service->delete($movimentacao);
+
+        return ApiResponse::success(null, 'Movimentação deletada com sucesso');
     }
 }

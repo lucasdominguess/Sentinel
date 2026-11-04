@@ -2,31 +2,33 @@
 
 namespace App\DTOs;
 
-use App\Models\Aporte;
+use App\Models\Movimentacao;
 
-class AporteResponseDTO implements \JsonSerializable
+class MovimentacaoResponseDTO implements \JsonSerializable
 {
     public function __construct(
         public readonly int $id,
         public readonly int $acaoId,
         public readonly ?string $ticker,
         public readonly ?string $nome,
-        public readonly string $precoPago,
+        public readonly string $tipo,
+        public readonly string $preco,
         public readonly int $quantidade,
-        public readonly string $totalInvestido,
+        public readonly string $total,
         public readonly ?string $data,
     ) {}
 
-    public static function fromModel(Aporte $model): self
+    public static function fromModel(Movimentacao $model): self
     {
         return new self(
             id: $model->id,
             acaoId: $model->acao_id,
             ticker: $model->acao?->ticker,
             nome: $model->acao?->nome,
-            precoPago: $model->preco_pago,
+            tipo: $model->tipo->value,
+            preco: $model->preco,
             quantidade: $model->quantidade,
-            totalInvestido: $model->total_investido,
+            total: $model->total,
             data: $model->data?->format('Y-m-d'),
         );
     }
@@ -43,9 +45,10 @@ class AporteResponseDTO implements \JsonSerializable
             'acao_id' => $this->acaoId,
             'ticker' => $this->ticker,
             'nome' => $this->nome,
-            'preco_pago' => $this->precoPago,
+            'tipo' => $this->tipo,
+            'preco' => $this->preco,
             'quantidade' => $this->quantidade,
-            'total_investido' => $this->totalInvestido,
+            'total' => $this->total,
             'data' => $this->data,
         ];
     }

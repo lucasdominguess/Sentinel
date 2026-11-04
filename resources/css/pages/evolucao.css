@@ -1,0 +1,101 @@
+/* Específico de Carteira › Evolução. Usa os primitivos de components.css. */
+.evo-range { display: flex; align-items: center; gap: var(--space-2); }
+
+/* KPIs do período */
+.evo-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); margin: 0; }
+.evo-kpi { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px; }
+.evo-kpi dt { font-size: var(--text-xs); font-weight: 600; letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--color-text-3); }
+.evo-kpi dd { margin: 0; }
+.evo-kpi__val { display: flex; align-items: baseline; gap: 4px; font-size: 24px; line-height: 1.1; font-weight: var(--weight-strong); letter-spacing: -0.02em; }
+.evo-kpi__val .price__cur { font-size: 14px; }
+.evo-kpi__sub { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12.5px; color: var(--color-text-3); font-variant-numeric: tabular-nums; }
+
+/* Cartões de gráfico / contribuição */
+.evo-card { margin-top: var(--space-4); padding: 20px 20px 16px; }
+.evo-card__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-4); margin-bottom: var(--space-4); }
+.evo-card__title { margin: 0; font-size: 15px; font-weight: 650; }
+.evo-card__hint, .evo-card__note { font-size: 12.5px; color: var(--color-text-3); }
+.evo-card__note { margin: var(--space-4) 0; }
+
+.evo-legend { display: flex; flex-wrap: wrap; gap: 6px var(--space-4); margin: 0; padding: 0; list-style: none; font-size: 12.5px; color: var(--color-text-2); }
+.evo-legend li { display: inline-flex; align-items: center; gap: 7px; }
+.evo-legend__key { width: 16px; height: 0; border-top: 2px solid; }
+.evo-legend__key--valor { border-color: var(--color-accent); }
+.evo-legend__key--custo { border-color: var(--color-text-3); border-top-style: dashed; }
+.evo-legend__key--mov { width: 8px; height: 8px; border: 0; border-radius: 50%; background: var(--color-surface); box-shadow: inset 0 0 0 2px var(--color-accent); }
+
+/* Gráfico: eixo Y em HTML à esquerda, plot com SVG esticado, eixo X embaixo */
+.evo-chart { --axis-w: 64px; }
+.evo-chart__plot { display: flex; height: 260px; }
+.evo-chart__yaxis { position: relative; flex: none; width: var(--axis-w); }
+.evo-chart__yaxis span { position: absolute; right: 10px; transform: translateY(-50%); font-size: 11.5px; color: var(--color-text-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.evo-chart__canvas { position: relative; flex: 1; min-width: 0; }
+.evo-chart__canvas svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.evo-chart__grid { position: absolute; left: 0; right: 0; height: 0; border-top: 1px solid var(--color-divider); }
+.evo-chart__area { fill: var(--color-accent); fill-opacity: .1; }
+.evo-chart__valor, .evo-chart__custo { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.evo-chart__valor { stroke: var(--color-accent); }
+.evo-chart__custo { stroke: var(--color-text-3); stroke-dasharray: 5 4; }
+.evo-chart__mov, .evo-chart__end, .evo-chart__hover { position: absolute; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; pointer-events: none; }
+.evo-chart__mov { background: var(--color-surface); box-shadow: inset 0 0 0 2px var(--color-accent), 0 0 0 2px var(--color-surface); }
+.evo-chart__end, .evo-chart__hover { background: var(--color-accent); box-shadow: 0 0 0 2px var(--color-surface); }
+.evo-chart__hover { width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; }
+.evo-chart__cross { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px solid var(--color-border-strong); pointer-events: none; }
+.evo-chart__hit { position: absolute; inset: 0; cursor: crosshair; outline: none; }
+.evo-chart__hit:focus-visible { box-shadow: inset 0 0 0 2px var(--color-accent-ring); border-radius: var(--radius-sm); }
+.evo-chart__xaxis { position: relative; height: 24px; margin-left: var(--axis-w); }
+.evo-chart__xaxis span { position: absolute; top: 8px; transform: translateX(-50%); font-size: 11.5px; color: var(--color-text-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.evo-chart__xaxis span:first-child { transform: none; }
+.evo-chart__xaxis span:last-child { transform: translateX(-100%); }
+
+.evo-chart__tip {
+  position: absolute; top: 8px; z-index: 2; min-width: 210px; padding: 10px 12px; pointer-events: none;
+  background: var(--color-raised); color: var(--color-text); border: 1px solid var(--color-border);
+  border-radius: var(--radius); box-shadow: var(--shadow-lg); font-size: 12.5px; font-variant-numeric: tabular-nums;
+}
+.evo-tip__date { margin-bottom: 6px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--color-text-3); }
+.evo-tip__row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.evo-tip__row + .evo-tip__row { margin-top: 3px; }
+.evo-tip__row > span:first-child { display: inline-flex; align-items: center; gap: 6px; color: var(--color-text-2); }
+.evo-tip__row strong { font-weight: 650; }
+.evo-tip__sep { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--color-divider); }
+
+/* Tabela (visão acessível dos pontos) */
+.evo-table { margin-top: var(--space-3); }
+.evo-table summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--color-text-2); }
+.evo-table summary:hover { color: var(--color-text); }
+.evo-table__wrap { margin-top: var(--space-3); overflow-x: auto; }
+.evo-table table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.evo-table th, .evo-table td { padding: 8px 12px; border-bottom: 1px solid var(--color-divider); text-align: left; white-space: nowrap; }
+.evo-table th { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--color-text-3); }
+.evo-table .r { text-align: right; }
+.evo-table .tag { margin-left: 6px; height: 18px; font-size: 10.5px; }
+
+/* Contribuição por ativo: barra divergente centrada (ganho à direita, perda à esquerda) */
+.evo-contrib__row { display: grid; grid-template-columns: minmax(160px, 1.4fr) 110px 130px 110px minmax(260px, 2fr); gap: var(--space-4); align-items: center; min-height: 52px; padding: 0 4px; border-bottom: 1px solid var(--color-divider); font-variant-numeric: tabular-nums; }
+.evo-contrib__row:last-child { border-bottom: 0; }
+.evo-contrib__row--head { min-height: 34px; font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--color-text-3); }
+.evo-contrib__row .r { text-align: right; }
+.evo-contrib__row .muted { font-size: 13px; color: var(--color-text-2); }
+.evo-contrib__id { display: flex; flex-direction: column; min-width: 0; }
+.evo-contrib__id .ticker { font-size: var(--text-base); color: var(--color-text); }
+.evo-contrib__name { font-size: 12px; color: var(--color-text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.evo-contrib__gain { display: grid; grid-template-columns: 1fr 104px 56px; align-items: center; gap: var(--space-3); }
+.evo-contrib__val { text-align: right; font-size: 13.5px; font-weight: 650; }
+.evo-contrib__pct { text-align: right; font-size: 12px; color: var(--color-text-3); }
+.evo-bar { position: relative; height: 10px; }
+.evo-bar::before { content: ""; position: absolute; top: -3px; bottom: -3px; left: 50%; border-left: 1px solid var(--color-border-strong); }
+.evo-bar span { position: absolute; top: 0; bottom: 0; }
+.evo-bar--up span { background: var(--up); border-radius: 0 4px 4px 0; }
+.evo-bar--down span { background: var(--down); border-radius: 4px 0 0 4px; }
+.evo-bar--flat span { display: none; }
+
+@media (max-width: 860px) {
+  .evo-contrib__row { grid-template-columns: minmax(0, 1fr) minmax(200px, 1.2fr); }
+  .evo-contrib__row > :nth-child(2), .evo-contrib__row > :nth-child(3), .evo-contrib__row > :nth-child(4) { display: none; }
+}
+@media (max-width: 639px) {
+  .evo-chart { --axis-w: 52px; }
+  .evo-chart__plot { height: 200px; }
+  .evo-range { flex: 1 1 100%; }
+}

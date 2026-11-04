@@ -1,8 +1,15 @@
-/* Específico de Aportes › Meus ativos. Usa os primitivos e dataviz de components.css. */
+/* Específico de Carteira › Meus ativos. Usa os primitivos e dataviz de components.css. */
+/* Barra "Posição em [data]": calendário + selo ao vivo/fechamento */
+.as-of { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); margin-top: var(--space-6); }
+.as-of__link { margin-left: auto; font-size: 13.5px; font-weight: 600; }
+@media (max-width: 639px) { .as-of__link { margin-left: 0; flex-basis: 100%; } }
+.as-of + .portfolio-summary, .as-of + .empty { margin-top: var(--space-4) !important; }
+@media (max-width: 480px) { .summary__split { grid-template-columns: 1fr 1fr; } .summary__split > .kpi:nth-child(3) { padding-left: 0; border-left: 0; } }
+
 .portfolio-summary { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: 28px; }
 .portfolio-summary > .card { padding: var(--space-6); display: flex; flex-direction: column; }
 .summary { flex: 1 1 420px; }
-.summary__split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin: var(--space-6) 0 0; padding-top: 18px; border-top: 1px solid var(--color-divider); }
+.summary__split { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); margin: var(--space-6) 0 0; padding-top: 18px; border-top: 1px solid var(--color-divider); }
 .summary__split > .kpi + .kpi { padding-left: var(--space-4); border-left: 1px solid var(--color-divider); }
 .summary .cost-bar { margin-top: auto; padding-top: 22px; }
 .allocation { flex: 1 1 360px; gap: 18px; }

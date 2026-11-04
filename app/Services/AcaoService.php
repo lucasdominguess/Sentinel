@@ -75,4 +75,13 @@ class AcaoService implements AcaoServiceInterface
 
         return $paginator;
     }
+
+    // Preços intradia por ativo (ordem cronológica), indexados por acao_id — alimenta o sparkline
+    public function seriesIntradia(array $acaoIds): array
+    {
+        return $this->repository->seriesIntradia($acaoIds)
+            ->groupBy('acao_id')
+            ->map(fn ($linhas) => $linhas->map(fn ($c) => (float) $c->preco)->values()->all())
+            ->all();
+    }
 }

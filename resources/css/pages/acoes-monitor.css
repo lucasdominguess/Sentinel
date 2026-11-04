@@ -7,7 +7,8 @@
 .breadth__up { background: var(--up); }
 .breadth__down { background: var(--down); opacity: .85; }
 
-/* asset-grid, results-meta e os primitivos price/delta/ticker vivem em components.css (sistema). */
+/* asset-grid, asset-table/asset-row (lista densa), results-meta e os primitivos
+   price/delta/ticker vivem em components.css (sistema). */
 
 /* Card de ativo */
 .asset-card { display: flex; flex-direction: column; padding: 18px 18px var(--space-4); }

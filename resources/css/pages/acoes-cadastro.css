@@ -1,5 +1,10 @@
 /* acoes-cadastro.css — tabela de gestão (CRUD) dos ativos cadastrados */
 
+/* Tela de gestão é uma tabela larga: usa mais da largura da tela que o container padrão */
+main.container {
+    max-width: 1440px;
+}
+
 .page-head {
     display: flex;
     align-items: flex-end;
@@ -95,6 +100,15 @@
 
 .reg-table tbody tr:hover {
     background: var(--surface-2);
+}
+
+/* Nome absorve o espaço livre e trunca (o título mostra o nome completo):
+   nomes longos de ETF/FII não empurram a coluna de ações para fora */
+.reg-table .reg-nome {
+    width: 100%;
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .reg-ticker {

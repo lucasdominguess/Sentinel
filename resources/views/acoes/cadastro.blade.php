@@ -41,7 +41,7 @@
                 <thead>
                     <tr>
                         <th>Ticker</th>
-                        <th>Nome</th>
+                        <th class="reg-nome">Nome</th>
                         <th>Setor</th>
                         <th>Tipo</th>
                         <th>Status</th>
@@ -52,7 +52,7 @@
                     @foreach ($ativos as $ativo)
                         <tr data-search="{{ mb_strtolower($ativo['ticker'] . ' ' . ($ativo['nome'] ?? '') . ' ' . ($ativo['setor'] ?? '')) }}">
                             <td><span class="reg-ticker">{{ $ativo['ticker'] }}</span></td>
-                            <td>{{ $ativo['nome'] ?? '—' }}</td>
+                            <td class="reg-nome" title="{{ $ativo['nome'] ?? '' }}">{{ $ativo['nome'] ?? '—' }}</td>
                             <td>{{ $ativo['setor'] ?? '—' }}</td>
                             <td><span class="tag">{{ $tipoLabel($ativo['tipo']) }}</span></td>
                             <td>

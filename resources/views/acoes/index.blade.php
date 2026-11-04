@@ -1,7 +1,7 @@
 {{--
   Lista de ativos monitorados (Ações / FIIs / ETFs — mesma view, $tipo define o título).
   Recebe do PainelController@listar:
-    $acoes        array de ativos: ['id','ticker','nome','ultima_cotacao'=>[...]]
+    $acoes        array de ativos: ['id','ticker','nome','ultima_cotacao'=>[...],'serie'=>[...]]
     $coleta       ?array da última execução do coletor: ['inicio','concluida','com_falha','ativos_ok','ativos_falha']
     $ultimaColeta ?string maior capturado_em entre os ativos
     $titulo       string
@@ -35,6 +35,9 @@
 
         $atualizadoEm = $coleta['inicio'] ?? $ultimaColeta ?? null;
         $atualizado = $atualizadoEm ? \Illuminate\Support\Carbon::parse($atualizadoEm) : null;
+
+        // Coleta que não terminou ou que não atualizou nenhum ativo: os valores exibidos são antigos
+        $coletaFalhou = $coleta && (!$coleta['concluida'] || ($coleta['com_falha'] && !$coleta['ativos_ok']));
 
         $kicker = match ($tipo) {
             \App\Enums\TipoAtivo::FII => 'Monitor · Fundos imobiliários',
@@ -102,6 +105,7 @@
                 <button type="button" data-sort="menor" aria-pressed="false">Menor valor</button>
             </nav>
             <div class="toolbar__end">
+                <x-view-toggle />
                 <div class="search">
                     <svg class="search__icon" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
                     <input type="search" placeholder="Filtrar por ticker ou nome…" aria-label="Filtrar ativos" autocomplete="off" data-filter>
@@ -110,7 +114,18 @@
             </div>
         </div>
 
-        <p class="results-meta" data-count data-total="{{ $total }}">{{ $total }} de {{ $total }} ativos</p>
+        @if ($coletaFalhou)
+            <div class="alert alert--error" role="alert">
+                <span class="alert__icon" aria-hidden="true">!</span>
+                <p>
+                    <strong>Falha ao atualizar cotações.</strong>
+                    <span class="tone-flat">Exibindo os últimos valores{{ $atualizado ? ' de ' . $atualizado->format('d/m · H:i') : '' }}.</span>
+                </p>
+                <a class="btn btn-ghost btn--sm" href="{{ url()->current() }}">Tentar novamente</a>
+            </div>
+        @endif
+
+        <p class="results-meta"><span data-count data-total="{{ $total }}">{{ $total }} de {{ $total }} ativos</span> · <span data-sort-label>Maior alta %</span></p>
 
         {{-- Vazio de busca: o sentinel.js alterna a visibilidade conforme o filtro --}}
         <div class="empty" data-empty hidden>
@@ -122,9 +137,26 @@
             <button class="btn btn-primary" type="button" data-filter-clear>Limpar filtro</button>
         </div>
 
-        <div class="asset-grid" id="grid">
+        <div class="asset-grid" id="grid" data-results>
             @foreach ($acoes as $acao)
                 <x-asset-card :a="$acao" />
+            @endforeach
+        </div>
+
+        {{-- Lista densa: só ≥1024px e quando o usuário escolhe "Lista" (data-layout no <html>) --}}
+        <div class="card asset-table" role="table" aria-label="{{ $titulo }}" data-results>
+            <div class="asset-row asset-row--head" role="row">
+                <span role="columnheader">Ativo</span>
+                <span role="columnheader">Intradia</span>
+                <span role="columnheader" class="r">Preço</span>
+                <span role="columnheader" class="r">Var. R$</span>
+                <span role="columnheader" class="r">Var. %</span>
+                <span role="columnheader">Faixa do dia</span>
+                <span role="columnheader" class="r">Fech. ant.</span>
+                <span role="columnheader" class="r">Abertura</span>
+            </div>
+            @foreach ($acoes as $acao)
+                <x-asset-row :a="$acao" />
             @endforeach
         </div>
     @endif

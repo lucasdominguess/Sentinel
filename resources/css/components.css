@@ -34,17 +34,28 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .topbar__end { margin-left: auto; display: flex; align-items: center; gap: var(--space-2); }
 
 .nav { display: none; gap: 2px; margin-left: var(--space-2); }
-.nav a {
-  display: flex; align-items: center; height: 34px; padding: 0 var(--space-3);
-  border-radius: var(--radius); font-size: 13.5px; font-weight: var(--weight-medium);
+.nav > a, .nav__trigger {
+  display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 var(--space-3);
+  border: 0; border-radius: var(--radius); background: transparent; cursor: pointer;
+  font: var(--weight-medium) 13.5px var(--font-sans);
   color: var(--color-text-2); transition: color var(--dur-fast), background var(--dur-fast);
 }
-.nav a:hover { color: var(--color-text); background: var(--color-surface-2); text-decoration: none; }
-.nav a[aria-current="page"] { color: var(--color-accent); background: var(--color-accent-bg); font-weight: var(--weight-semibold); }
-/* Menu hambúrguer + drawer ficam disponíveis em TODAS as larguras (app tem muitos
-   destinos: Monitor x3, Aportes, Ferramentas, Cadastro). A nav inline no topo
-   aparece a partir de 1024px como atalho aos 3 monitores. */
-@media (min-width: 1024px) { .nav { display: flex; } }
+.nav > a:hover, .nav__trigger:hover, .nav__trigger[aria-expanded="true"] { color: var(--color-text); background: var(--color-surface-2); text-decoration: none; }
+.nav > a[aria-current="page"], .nav__trigger.is-current { color: var(--color-accent); background: var(--color-accent-bg); font-weight: var(--weight-semibold); }
+.nav__chev { opacity: .7; transition: transform var(--dur-fast); }
+.nav__trigger[aria-expanded="true"] .nav__chev { transform: rotate(180deg); }
+/* Grupos (Aportes, Ferramentas, Cadastro) abrem um popover com os destinos */
+.nav__menu { position: relative; }
+.nav__pop {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: var(--z-topbar); min-width: 200px;
+  display: flex; flex-direction: column; gap: 2px; padding: 6px;
+  background: var(--color-raised); border: 1px solid var(--color-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+}
+.nav__pop a { display: flex; align-items: center; min-height: 36px; padding: 0 10px; border-radius: var(--radius-sm); font-size: 13.5px; color: var(--color-text-2); }
+.nav__pop a:hover { color: var(--color-text); background: var(--color-surface-2); text-decoration: none; }
+.nav__pop a[aria-current="page"] { color: var(--color-accent); background: var(--color-accent-bg); font-weight: var(--weight-semibold); }
+/* < 1024px: menu hambúrguer + drawer. ≥ 1024px: nav completa no topo (monitores + grupos). */
+@media (min-width: 1024px) { .nav { display: flex; } .topbar > .topbar__menu { display: none; } }
 
 /* ---------- Drawer ---------- */
 .drawer { position: fixed; inset: 0; z-index: var(--z-drawer); visibility: hidden; }
@@ -112,7 +123,7 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
   background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: 10px; }
 .seg::-webkit-scrollbar { display: none; }
 .seg > * {
-  flex: none; display: grid; place-items: center; height: 34px; min-width: 34px; padding: 0 14px;
+  flex: none; display: grid; grid-auto-flow: column; place-items: center; height: 34px; min-width: 34px; padding: 0 14px;
   border: 0; border-radius: 7px; background: transparent; color: var(--color-text-2);
   font: var(--weight-medium) 13px var(--font-sans); white-space: nowrap; cursor: pointer;
   transition: color var(--dur-fast), background var(--dur-fast), box-shadow var(--dur-fast);
@@ -123,6 +134,10 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
   box-shadow: var(--shadow-sm), inset 0 0 0 1px var(--color-border);
 }
 .seg--icon > * { padding: 0; width: 34px; }
+.seg--sm { padding: 3px; border-radius: 9px; }
+.seg--sm > * { height: 28px; padding: 0 var(--space-3); border-radius: 6px; font-size: var(--text-sm); }
+.seg > :disabled { opacity: .45; cursor: default; }
+.seg__count { margin-left: 7px; font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--color-text-3); }
 
 .search { position: relative; display: flex; align-items: center; flex: 1; min-width: 0; }
 .search__icon { position: absolute; left: 12px; color: var(--color-text-3); pointer-events: none; }
@@ -197,7 +212,7 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .spark__line { fill: none; stroke: var(--tone); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 .spark__prev { stroke: var(--color-text-3); stroke-width: 1; stroke-dasharray: 2 3; opacity: .7; vector-effect: non-scaling-stroke; }
 .spark__dot { position: absolute; right: -3px; width: 7px; height: 7px; margin-top: -3.5px; border-radius: 50%; background: var(--tone); box-shadow: 0 0 0 3px var(--color-surface); }
-.spark--sm { height: 28px; width: 128px; }
+.spark--sm { height: 28px; width: 100%; }
 .spark--sm .spark__area, .spark--sm .spark__dot { display: none; }
 
 /* ---------- Dataviz: faixa do dia ---------- */
@@ -209,6 +224,36 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .range__now { position: absolute; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: var(--color-surface); border: 2px solid var(--tone);
   transition: left var(--dur-slow) var(--ease-out); }
 .range__labels { display: flex; justify-content: space-between; margin-top: var(--space-2); font-size: 11.5px; color: var(--color-text-3); font-variant-numeric: tabular-nums; }
+
+/* ---------- Grade / Lista densa (compartilhadas: monitor + carteira) ---------- */
+/* A lista só existe ≥1024px e quando <html data-layout="list">; abaixo disso, sempre grade. */
+.view-toggle { display: none; }
+.asset-table { display: none; overflow: hidden; }
+@media (min-width: 1024px) {
+  .view-toggle { display: flex; }
+  :root[data-layout="list"] .asset-table { display: block; }
+  :root[data-layout="list"] .asset-grid { display: none; }
+}
+.asset-row { position: relative; display: grid; align-items: center; gap: var(--space-4);
+  grid-template-columns: minmax(200px, 1.7fr) 112px 100px 96px 92px minmax(160px, 1.2fr) 88px 88px;
+  min-height: 60px; padding: 0 var(--space-5); border-bottom: 1px solid var(--color-divider);
+  font-variant-numeric: tabular-nums; cursor: pointer; transition: background var(--dur-fast); }
+.asset-row:last-child { border-bottom: 0; }
+.asset-row:hover { background: var(--color-surface-2); }
+.asset-row:has(:focus-visible) { box-shadow: inset 0 0 0 2px var(--color-accent-ring); }
+.asset-row--head > * { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.asset-row--head { min-height: 40px; cursor: default; background: var(--color-surface-2); font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--color-text-3); }
+.asset-row .r { text-align: right; justify-self: end; }
+.asset-row .muted { font-size: 13px; color: var(--color-text-2); }
+.asset-row__id { min-width: 0; }
+.asset-row__id .ticker { font-size: var(--text-base); }
+.asset-row__name { font-size: 12px; color: var(--color-text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.asset-row__price { font-size: var(--text-md); font-weight: var(--weight-strong); }
+.asset-row .range { display: flex; align-items: center; gap: var(--space-2); font-size: 11.5px; color: var(--color-text-3); }
+.asset-row .range__track { flex: 1; }
+.asset-row .range__now { width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; }
+/* o link "esticado" do ticker cobre a linha; a linha não tem raio */
+.asset-row .card__link::after { border-radius: 0; }
 
 /* ---------- Primitivos de valor (compartilhados: lista + carteira) ---------- */
 .asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(256px, 1fr)); gap: var(--space-4); }

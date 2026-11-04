@@ -32,6 +32,37 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && drawer.classList.contains('is-open')) close(); });
   }
 
+  // Menus da nav do topo (Aportes, Ferramentas, Cadastro): abre/fecha e fecha ao clicar fora/Esc
+  const menus = [...document.querySelectorAll('[data-menu]')];
+  const closeMenus = (except) => menus.forEach(m => {
+    if (m === except) return;
+    m.querySelector('[aria-expanded]').setAttribute('aria-expanded', 'false');
+    m.querySelector('.nav__pop').hidden = true;
+  });
+  menus.forEach(m => {
+    const trigger = m.querySelector('[aria-expanded]');
+    const pop = m.querySelector('.nav__pop');
+    trigger.addEventListener('click', () => {
+      const willOpen = trigger.getAttribute('aria-expanded') !== 'true';
+      closeMenus(m);
+      trigger.setAttribute('aria-expanded', String(willOpen));
+      pop.hidden = !willOpen;
+    });
+  });
+  document.addEventListener('click', e => { if (!e.target.closest('[data-menu]')) closeMenus(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenus(); });
+
+  // Grade / Lista: preferência única do app, aplicada no <html data-layout> (o layout já
+  // aplica antes do paint; aqui só sincroniza os botões e grava a escolha)
+  const toggles = document.querySelectorAll('[data-layout-set]');
+  const syncLayout = () => toggles.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.layoutSet === (root.dataset.layout || 'grid'))));
+  toggles.forEach(b => b.addEventListener('click', () => {
+    root.dataset.layout = b.dataset.layoutSet;
+    try { localStorage.setItem('sentinel-layout', b.dataset.layoutSet); } catch (e) {}
+    syncLayout();
+  }));
+  syncLayout();
+
   // Busca: filtro ao vivo (o form GET continua funcionando sem JS)
   const input = document.querySelector('[data-filter]');
   if (input) {

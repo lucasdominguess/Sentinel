@@ -1,12 +1,12 @@
 {{-- Sparkline intradia em SVG puro. points: array<float>; prev: fechamento anterior (linha tracejada).
-     Ainda não renderiza na lista: o controller não envia a série intradiária ($serie).
-     Fica pronto para quando o coletor passar a enviar os pontos. --}}
+     A série vem dos snapshots do coletor (PainelController@listar → 'serie'); com menos
+     de 2 pontos não renderiza nada e o card continua íntegro. --}}
 @props(['points' => [], 'min' => null, 'max' => null, 'prev' => null, 'trend' => 'flat', 'w' => 240, 'h' => 52])
 @php
   $pts = array_values($points);
   $n = count($pts);
-  $lo = $min ?? ($n ? min($pts) : 0);
-  $hi = $max ?? ($n ? max($pts) : 1);
+  $lo = $n ? min($min ?? INF, ...$pts) : ($min ?? 0);
+  $hi = $n ? max($max ?? -INF, ...$pts) : ($max ?? 1);
   $span = max($hi - $lo, 1e-9);
   $pad = 4;
   $y = fn ($v) => round($pad + ($hi - min(max($v, $lo), $hi)) / $span * ($h - 2 * $pad), 1);

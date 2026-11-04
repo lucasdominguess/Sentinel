@@ -2,7 +2,7 @@
   Meus ativos — posição consolidada da carteira.
   Recebe do PainelController@meusAtivos:
     $posicoes  Collection de arrays (PosicaoResponseDTO::toArray):
-               ['acao_id','ticker','nome','quantidade','total_investido','preco_medio',
+               ['acao_id','ticker','nome','tipo','quantidade','total_investido','preco_medio',
                 'preco_atual','valor_atual','valorizacao_reais','valorizacao_pct']
   Resumo, alocação, cor e peso são derivados aqui (o controller não os envia).
 --}}
@@ -50,7 +50,20 @@
             $alocacao[] = ['label' => 'Outros', 'value' => $restoTotal, 'color' => 'var(--cat-rest)'];
         }
 
+        // Alocação por classe (FIIs, Ações, ETFs) — mesmas cores categóricas, na ordem do enum
+        $alocacaoClasse = [];
+        foreach ([\App\Enums\TipoAtivo::FII, \App\Enums\TipoAtivo::ACAO, \App\Enums\TipoAtivo::ETF] as $i => $t) {
+            $v = (float) $posicoes->where('tipo', $t->value)->sum($atualDe);
+            if ($v > 0) {
+                $alocacaoClasse[] = ['label' => ['fii' => 'FIIs', 'acao' => 'Ações', 'etf' => 'ETFs'][$t->value], 'value' => $v, 'color' => $cats[$i]];
+            }
+        }
+
         $pesoDe = fn ($p) => $atual > 0 ? $atualDe($p) / $atual * 100 : 0;
+
+        // Abas de classe com contagem
+        $classes = ['' => 'Todos', 'acao' => 'Ações', 'fii' => 'FIIs', 'etf' => 'ETFs'];
+        $contagem = fn ($k) => $k === '' ? $posicoes->count() : $posicoes->where('tipo', $k)->count();
     @endphp
 
     <section class="page-header">
@@ -89,25 +102,64 @@
             </section>
 
             <section class="card allocation" aria-label="Alocação da carteira">
-                <div class="allocation__head"><span class="label">Alocação por ativo</span></div>
-                <x-donut :segments="$alocacao" :center-value="$mil($atual)" center-label="Valor atual" />
+                <div class="allocation__head">
+                    <span class="label">Alocação</span>
+                    <nav class="seg seg--sm" aria-label="Agrupar alocação">
+                        <button type="button" data-group="ativo" aria-pressed="true">Ativo</button>
+                        <button type="button" data-group="classe" aria-pressed="false">Classe</button>
+                    </nav>
+                </div>
+                <div data-group-pane="ativo">
+                    <x-donut :segments="$alocacao" :center-value="$mil($atual)" center-label="Valor atual" label="Alocação por ativo" />
+                </div>
+                <div data-group-pane="classe" hidden>
+                    <x-donut :segments="$alocacaoClasse" :center-value="$mil($atual)" center-label="Valor atual" label="Alocação por classe" />
+                </div>
             </section>
         </div>
 
         <div class="toolbar toolbar--spaced">
-            <nav class="seg" aria-label="Ordenar posições">
-                <button type="button" data-sort="posicao" aria-pressed="true">Maior posição</button>
-                <button type="button" data-sort="pior" aria-pressed="false">Pior valorização</button>
-                <button type="button" data-sort="melhor" aria-pressed="false">Melhor valorização</button>
-                <button type="button" data-sort="az" aria-pressed="false">Ticker A–Z</button>
+            <nav class="seg" aria-label="Filtrar por classe">
+                @foreach ($classes as $k => $label)
+                    <button type="button" data-classe="{{ $k }}" aria-pressed="{{ $k === '' ? 'true' : 'false' }}" @if($k !== '' && !$contagem($k)) disabled @endif>{{ $label }}<span class="seg__count">{{ $contagem($k) }}</span></button>
+                @endforeach
             </nav>
+            <div class="toolbar__end toolbar__end--sort">
+                <label class="select">
+                    <span class="select__prefix">Ordenar</span>
+                    <select aria-label="Ordenar posições" data-order>
+                        <option value="posicao">Maior posição</option>
+                        <option value="pior">Pior valorização</option>
+                        <option value="melhor">Melhor valorização</option>
+                        <option value="az">Ticker A–Z</option>
+                    </select>
+                </label>
+                <x-view-toggle />
+            </div>
         </div>
 
-        <p class="results-meta">{{ $posicoes->count() }} {{ $posicoes->count() === 1 ? 'posição' : 'posições' }}</p>
+        <p class="results-meta" data-count-pos>{{ $posicoes->count() }} {{ $posicoes->count() === 1 ? 'posição' : 'posições' }}</p>
 
         <div class="asset-grid" id="grid">
             @foreach ($ranked as $p)
                 <x-holding-card :p="$p" :cor="$corDe[$p['acao_id']]" :peso="$pesoDe($p)" />
+            @endforeach
+        </div>
+
+        <div class="card asset-table" role="table" aria-label="Posições">
+            <div class="asset-row asset-row--head holding-row" role="row">
+                <span role="columnheader">Ativo</span>
+                <span role="columnheader">Classe</span>
+                <span role="columnheader" class="r">Qtd.</span>
+                <span role="columnheader" class="r">Preço médio</span>
+                <span role="columnheader" class="r">Preço atual</span>
+                <span role="columnheader" class="r">Investido</span>
+                <span role="columnheader" class="r">Valor atual</span>
+                <span role="columnheader" class="r">Valorização</span>
+                <span role="columnheader">Peso</span>
+            </div>
+            @foreach ($ranked as $p)
+                <x-holding-row :p="$p" :cor="$corDe[$p['acao_id']]" :peso="$pesoDe($p)" />
             @endforeach
         </div>
     @endif

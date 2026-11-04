@@ -213,6 +213,10 @@ class PainelController extends Controller
         $paginator = $this->service->index(100, 1, ['tipo' => $tipo->value]);
         $acoes = $paginator->items();
 
+        // Série intradia (snapshots do coletor) para o sparkline de cada card/linha
+        $series = $this->service->seriesIntradia(array_column($acoes, 'id'));
+        $acoes = array_map(fn ($a) => $a + ['serie' => $series[$a['id']] ?? []], $acoes);
+
         // Horário da coleta mais recente (maior capturado_em entre os ativos exibidos)
         $ultimaColeta = collect($acoes)
             ->pluck('ultima_cotacao.capturado_em')

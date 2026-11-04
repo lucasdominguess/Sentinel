@@ -1,12 +1,15 @@
-// Lista de ativos monitorados: ordenação client-side (pills) + tooltip de mín/máx do mês.
-// A busca ao vivo fica no sistema (sentinel.js). Progressive enhancement: sem JS,
-// a grade continua visível e navegável.
+// Lista de ativos monitorados: ordenação client-side (pills) da grade e da lista densa
+// + tooltip de mín/máx do mês. A busca ao vivo e o alternador grade/lista ficam no
+// sistema (sentinel.js). Progressive enhancement: sem JS, a grade continua navegável.
 (() => {
   const grid = document.getElementById('grid');
   if (!grid) return;
 
   const cards = Array.from(grid.querySelectorAll('.asset-card'));
+  const table = document.querySelector('.asset-table');
+  const rows = table ? Array.from(table.querySelectorAll('.asset-row:not(.asset-row--head)')) : [];
   const pills = document.querySelectorAll('[data-sort]');
+  const sortLabel = document.querySelector('[data-sort-label]');
 
   // --- Ordenação ---
   const num = (card, attr) => {
@@ -23,12 +26,14 @@
     const cmp = comparadores[chave] || comparadores.alta;
     // reanexa na nova ordem; o estado hidden (busca) é preservado
     cards.slice().sort(cmp).forEach((card) => grid.appendChild(card));
+    rows.slice().sort(cmp).forEach((row) => table.appendChild(row));
   };
   pills.forEach((pill) => {
     pill.addEventListener('click', () => {
       pills.forEach((p) => p.setAttribute('aria-pressed', 'false'));
       pill.setAttribute('aria-pressed', 'true');
       ordenar(pill.dataset.sort);
+      if (sortLabel) sortLabel.textContent = pill.textContent.trim();
     });
   });
 

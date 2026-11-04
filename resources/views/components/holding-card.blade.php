@@ -1,5 +1,5 @@
 {{-- Card de posição da carteira. Recebe o array real de PosicaoResponseDTO::toArray():
-     ['acao_id','ticker','nome','quantidade','total_investido','preco_medio','preco_atual','valor_atual','valorizacao_reais','valorizacao_pct']
+     ['acao_id','ticker','nome','tipo','quantidade','total_investido','preco_medio','preco_atual','valor_atual','valorizacao_reais','valorizacao_pct']
      + $cor (var(--cat-n)) e $peso (%) calculados na view. --}}
 @props(['p', 'cor' => 'var(--cat-rest)', 'peso' => 0])
 @php
@@ -10,16 +10,21 @@
   $pct = $temCotacao ? (float) ($p['valorizacao_pct'] ?? 0) : 0.0;
   $trend = $val > 0.004 ? 'up' : ($val < -0.004 ? 'down' : 'flat');
   $sinal = ['up' => '+', 'down' => '−', 'flat' => ''][$trend];
+  $classe = \App\Enums\TipoAtivo::tryFrom((string) ($p['tipo'] ?? ''))?->label();
 @endphp
 <article class="card card--interactive holding-card"
          data-ticker="{{ $p['ticker'] }}"
+         data-tipo="{{ $p['tipo'] ?? '' }}"
          data-posicao="{{ $valorAtual }}"
          data-valorizacao="{{ $temCotacao ? ($p['valorizacao_pct'] ?? '') : '' }}">
   <div class="holding-card__head">
     <div class="holding-card__id">
       <div class="holding-card__line">
         <span class="swatch swatch--sm" style="--c: {{ $cor }}" aria-hidden="true"></span>
-        <a class="card__link ticker" href="{{ route('painel.show', $p['acao_id']) }}">{{ $p['ticker'] ?? '—' }}</a>
+        <a class="card__link ticker" href="{{ route('painel.show', $p['acao_id']) }}"><x-ticker :value="$p['ticker']" /></a>
+        @if ($classe)
+          <span class="tag tag--class">{{ $classe }}</span>
+        @endif
       </div>
       <div class="holding-card__name" title="{{ $p['nome'] ?? '' }}">{{ $p['nome'] ?? '—' }}</div>
     </div>

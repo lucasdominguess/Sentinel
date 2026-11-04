@@ -1,5 +1,5 @@
 {{-- Card de ativo monitorado. Recebe o array real vindo do controller ($acao):
-     ['id', 'ticker', 'nome', 'ultima_cotacao' => [...]]. --}}
+     ['id', 'ticker', 'nome', 'ultima_cotacao' => [...], 'serie' => [preços intradia]]. --}}
 @props(['a'])
 @php
   $c = $a['ultima_cotacao'] ?? null;
@@ -19,6 +19,12 @@
   $temFaixa = $c && $min !== null && $max !== null && $abertura !== null
       && $max > $min && $min > 0 && $abertura > 0;
 
+  // Sparkline: abre na abertura e segue os snapshots do coletor até o preço atual
+  $serie = $a['serie'] ?? [];
+  if ($serie && $abertura > 0) {
+      array_unshift($serie, $abertura);
+  }
+
   $brl  = fn ($v) => number_format((float) $v, 2, ',', '.');
   $stat = fn ($v) => ($v === null || (float) $v == 0.0) ? '—' : 'R$ ' . number_format((float) $v, 2, ',', '.');
 @endphp
@@ -33,7 +39,7 @@
          data-max-mes-data="{{ $c['maxima_mes_data'] ?? '' }}">
   <div class="asset-card__head">
     <div class="asset-card__id">
-      <a class="card__link ticker" href="{{ route('painel.show', $a['id']) }}">{{ $a['ticker'] }}</a>
+      <a class="card__link ticker" href="{{ route('painel.show', $a['id']) }}"><x-ticker :value="$a['ticker']" /></a>
       <div class="asset-card__name" title="{{ $a['nome'] ?? '' }}">{{ $a['nome'] ?? '—' }}</div>
     </div>
     @if ($pct !== null)
@@ -55,6 +61,7 @@
   @endif
 
   @if ($temFaixa)
+    <x-sparkline :points="$serie" :min="$min" :max="$max" :prev="$fechAnt" :trend="$trend" />
     <x-range-bar :min="$min" :max="$max" :now="$preco" :open="$abertura" :trend="$trend" />
   @endif
 

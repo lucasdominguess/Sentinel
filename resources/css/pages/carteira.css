@@ -9,6 +9,7 @@
 .allocation__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: 4px; }
 
 .toolbar--spaced { margin-top: var(--space-7); }
+@media (min-width: 640px) { .toolbar__end--sort { flex: 0 1 320px; } }
 
 /* Card de posição */
 .holding-card { display: flex; flex-direction: column; padding: 18px 18px var(--space-4); }
@@ -27,3 +28,14 @@
 .holding-card__foot > div + div { padding-left: var(--space-3); border-left: 1px solid var(--color-divider); }
 .holding-card__foot dt { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--color-text-3); }
 .holding-card__foot dd { margin: 0; font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Lista densa (≥1024px; base .asset-row em components.css) */
+.holding-row { grid-template-columns: minmax(180px, 1.6fr) 56px 64px 92px 92px 104px 104px 160px 112px; font-size: 13px; }
+.holding-row__id { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.holding-row__val { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-2); font-weight: 650; }
+.holding-row__val .badge { height: 22px; padding: 0 6px; border-radius: 5px; font-size: 12px; }
+.holding-row__now { font-size: 14.5px; font-weight: var(--weight-strong); }
+.weight { display: flex; align-items: center; gap: var(--space-2); }
+.weight__track { flex: 1; height: 4px; border-radius: 2px; background: var(--color-surface-2); overflow: hidden; }
+.weight__fill { display: block; height: 100%; background: var(--c, var(--cat-rest)); }
+.weight__pct { min-width: 40px; text-align: right; font-size: 12px; font-weight: 600; }

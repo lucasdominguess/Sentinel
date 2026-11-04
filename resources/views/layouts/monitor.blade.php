@@ -15,6 +15,9 @@
         var t = localStorage.getItem('sentinel-theme')
           || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.dataset.theme = t;
+        // Grade / Lista (alternador das telas de monitor e carteira)
+        var l = localStorage.getItem('sentinel-layout');
+        if (l) document.documentElement.dataset.layout = l;
       } catch (e) {}
     })();
   </script>
@@ -25,6 +28,7 @@
 <body>
 @php
   $is = fn ($name) => request()->routeIs($name);
+  $chevron = '<svg class="nav__chev" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.75L5 6.75l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 @endphp
 
 <header class="topbar">
@@ -32,10 +36,32 @@
     <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor" aria-hidden="true"><rect x="2" y="4" width="14" height="1.6" rx=".8"/><rect x="2" y="8.2" width="14" height="1.6" rx=".8"/><rect x="2" y="12.4" width="9" height="1.6" rx=".8"/></svg>
   </button>
   <a class="brand" href="{{ route('painel.index') }}">Sentinel</a>
-  <nav class="nav" aria-label="Monitores">
+  <nav class="nav" aria-label="Principal">
     <a href="{{ route('painel.index') }}" @if($is('painel.index') || $is('painel.show')) aria-current="page" @endif>Ações</a>
     <a href="{{ route('painel.fiis') }}" @if($is('painel.fiis')) aria-current="page" @endif>FIIs</a>
     <a href="{{ route('painel.etfs') }}" @if($is('painel.etfs')) aria-current="page" @endif>ETFs</a>
+    <div class="nav__menu" data-menu>
+      <button type="button" class="nav__trigger @if($is('painel.aportes.*')) is-current @endif" aria-expanded="false" aria-controls="menu-aportes">Aportes{!! $chevron !!}</button>
+      <div class="nav__pop" id="menu-aportes" hidden>
+        <a href="{{ route('painel.aportes.create') }}" @if($is('painel.aportes.create')) aria-current="page" @endif>Registrar aporte</a>
+        <a href="{{ route('painel.aportes.meus') }}" @if($is('painel.aportes.meus')) aria-current="page" @endif>Meus ativos</a>
+        <a href="{{ route('painel.aportes.index') }}" @if($is('painel.aportes.index')) aria-current="page" @endif>Registros</a>
+      </div>
+    </div>
+    <div class="nav__menu" data-menu>
+      <button type="button" class="nav__trigger @if($is('painel.calculo') || $is('painel.porcentagem')) is-current @endif" aria-expanded="false" aria-controls="menu-ferramentas">Ferramentas{!! $chevron !!}</button>
+      <div class="nav__pop" id="menu-ferramentas" hidden>
+        <a href="{{ route('painel.calculo') }}" @if($is('painel.calculo')) aria-current="page" @endif>Cálculo de cotas</a>
+        <a href="{{ route('painel.porcentagem') }}" @if($is('painel.porcentagem')) aria-current="page" @endif>Cálculo de porcentagem</a>
+      </div>
+    </div>
+    <div class="nav__menu" data-menu>
+      <button type="button" class="nav__trigger @if($is('painel.adicionar') || $is('painel.ativos.*')) is-current @endif" aria-expanded="false" aria-controls="menu-cadastro">Cadastro{!! $chevron !!}</button>
+      <div class="nav__pop" id="menu-cadastro" hidden>
+        <a href="{{ route('painel.adicionar') }}" @if($is('painel.adicionar')) aria-current="page" @endif>Adicionar ticket</a>
+        <a href="{{ route('painel.ativos.index') }}" @if($is('painel.ativos.*')) aria-current="page" @endif>Gerenciar ativos</a>
+      </div>
+    </div>
   </nav>
   <div class="topbar__end">
     <button class="icon-btn" type="button" aria-label="Alternar tema" data-theme-toggle>

@@ -25,7 +25,7 @@ Uso (no servidor):
 import csv
 import sys
 from datetime import date, datetime
-from decimal import Decimal, InvalidOperation
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from pathlib import Path
 
 from config.logging_config import setup_logging
@@ -101,6 +101,12 @@ def _dec(value):
         return None
 
 
+def _total(preco, quantidade):
+    if preco is None:
+        return None
+    return (preco * quantidade).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+
 def _date(value):
     value = _none(value)
     return date.fromisoformat(value) if value else None
@@ -171,12 +177,16 @@ def importar_movimentacoes(conn, linhas: list[dict], permitir_dup: bool) -> tupl
                     conn.rollback()
                     continue
 
+                preco = _dec(row.get("preco") or row.get("preco_pago"))
+                quantidade = int(_none(row.get("quantidade")) or 0)
                 params = {
                     "acao_id": encontrada[0],
                     "tipo": tipo,
-                    "preco": _dec(row.get("preco") or row.get("preco_pago")),
-                    "quantidade": int(_none(row.get("quantidade")) or 0),
-                    "total": _dec(row.get("total") or row.get("total_investido")),
+                    "preco": preco,
+                    "quantidade": quantidade,
+                    # O total é derivado (mesma regra do MovimentacaoService): o do CSV
+                    # pode vir divergente de exports antigos e distorceria o preço médio
+                    "total": _total(preco, quantidade),
                     "data": _date(row.get("data")),
                     "created_at": _dt(row.get("created_at")),
                     "updated_at": _dt(row.get("updated_at")),

@@ -28,6 +28,20 @@ def _num(value):
     return None if isnan(valor) else valor
 
 
+# O history() do yfinance devolve float com ruído (165.449997 em vez de 165.45).
+# Só arredonda para 2 casas quando a diferença é ruído: preço ajustado por
+# desdobramento/bonificação tem mais casas de verdade e fica como veio.
+RUIDO_PRECO = 0.0001
+
+
+def _preco(value):
+    valor = _num(value)
+    if valor is None:
+        return None
+    centavos = round(valor, 2)
+    return centavos if abs(valor - centavos) < RUIDO_PRECO else valor
+
+
 def _vol(value):
     valor = _num(value)
     return int(valor) if valor is not None else None
@@ -53,15 +67,15 @@ def rows_from_history(hist) -> list[dict]:
 
     linhas = []
     for indice, row in hist.iterrows():
-        fechamento = _num(_coluna(row, "Close"))
+        fechamento = _preco(_coluna(row, "Close"))
         if fechamento is None:
             continue  # dia sem negociação útil
 
         linhas.append({
             "data": indice.date(),
-            "abertura": _num(_coluna(row, "Open")),
-            "maxima": _num(_coluna(row, "High")),
-            "minima": _num(_coluna(row, "Low")),
+            "abertura": _preco(_coluna(row, "Open")),
+            "maxima": _preco(_coluna(row, "High")),
+            "minima": _preco(_coluna(row, "Low")),
             "fechamento": fechamento,
             "fechamento_ajustado": _num(_coluna(row, "Adj Close", "Adj_Close")) or fechamento,
             "volume": _vol(_coluna(row, "Volume")),

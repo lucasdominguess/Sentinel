@@ -12,6 +12,8 @@ const tbody = document.getElementById('calc-tbody');
 const trocoTotalEl = document.getElementById('calc-troco-total');
 
 const brl = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+// Dinheiro em centavos inteiros: em float, 555 / 2,22 dá 249,999… e o floor perde uma cota
+const centavos = (v) => Math.round(v * 100);
 
 function novaLinha() {
     const row = template.content.firstElementChild.cloneNode(true);
@@ -33,8 +35,9 @@ function ligarLinha(row) {
         // auto-preenche o preço com a última cotação (continua editável)
         if (!Number.isNaN(p)) preco.value = p.toFixed(2);
 
-        // dividendo/cota = último provento pago; em branco se não houver
-        dividendo.value = !Number.isNaN(div) && div > 0 ? div.toFixed(2) : '';
+        // dividendo/cota = último provento pago (FII costuma ter 3+ casas: não arredonda
+        // para centavos); em branco se não houver
+        dividendo.value = !Number.isNaN(div) && div > 0 ? String(Number(div.toFixed(6))) : '';
 
         atualizarPaga(row);
     });
@@ -67,10 +70,12 @@ function calcular() {
     erroEl.hidden = true;
     if (valorTotal <= 0) return mostrarErro('Informe o valor total do aporte.');
     if (rows.length === 0) return mostrarErro('Adicione ao menos um ativo.');
-    if (Math.round(somaPorc) !== 100) return mostrarErro(`A soma das % Alvo deve ser 100% (atual: ${somaPorc}%).`);
+    if (Math.abs(somaPorc - 100) > 0.01) {
+        return mostrarErro(`A soma das % Alvo deve ser 100% (atual: ${somaPorc.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}%).`);
+    }
 
     tbody.innerHTML = '';
-    let trocoGeral = 0;
+    let trocoCent = 0;
 
     rows.forEach((r) => {
         const ticker = r.querySelector('.calc-ativo').value || '—';
@@ -80,12 +85,14 @@ function calcular() {
 
         if (preco <= 0) return;
 
-        const valorAlvo = valorTotal * (porc / 100);
-        const qtd = Math.floor(valorAlvo / preco); // não existe fração de cota
-        const investido = qtd * preco;
-        const troco = valorAlvo - investido;
+        const alvoCent = Math.round((centavos(valorTotal) * porc) / 100);
+        const precoCent = centavos(preco);
+        if (precoCent <= 0) return;
+        const qtd = Math.floor(alvoCent / precoCent); // não existe fração de cota
+        const investido = (qtd * precoCent) / 100;
+        const troco = (alvoCent - qtd * precoCent) / 100;
         const dividendos = qtd * divCota;
-        trocoGeral += troco;
+        trocoCent += alvoCent - qtd * precoCent;
 
         tbody.insertAdjacentHTML('beforeend', `
             <tr>
@@ -98,7 +105,7 @@ function calcular() {
             </tr>`);
     });
 
-    trocoTotalEl.textContent = brl(trocoGeral);
+    trocoTotalEl.textContent = brl(trocoCent / 100);
     resultado.hidden = false;
     resultado.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }

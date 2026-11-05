@@ -18,6 +18,6 @@ Route::get('acao/{acao}/cotacoes', [AcaoController::class, 'cotacoes']);
 Route::get('acao/{acao}/historico', [AcaoController::class, 'historico']);
 Route::apiResource('acao', AcaoController::class);
 
-Route::get('/test', [TestController::class, 'index']);
+Route::get('/test', [TestController::class, 'Test2']);
 
 Route::apiResource('movimentacao', MovimentacaoController::class);

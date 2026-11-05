@@ -94,33 +94,67 @@ class MovimentacaoService implements MovimentacaoServiceInterface
     }
 
     // Posição consolidada por ativo na data (inclusive); sem data, a posição atual.
-    // $precos ([acao_id => ['preco' => ?float, 'anterior' => ?float]]) fixa o preço de
-    // referência — o fechamento de um dia passado; sem ele, vale a última cotação.
-    // Ativos zerados por venda não aparecem.
+    // $precos ([acao_id => ['preco' => ?float, 'anterior' => ?float, 'data' => ?'Y-m-d']])
+    // fixa o preço de referência — o fechamento de um dia passado; sem ele, vale a
+    // última cotação. 'data' é o pregão do preço: o que foi movimentado nele é fluxo
+    // do dia na variação. Ativos zerados por venda não aparecem.
     public function posicoes(?string $ate = null, ?array $precos = null): Collection
     {
         $movs = $this->repository->daCarteira($ate);
         $acoes = $movs->pluck('acao', 'acao_id');
 
+        $refs = $acoes->map(fn ($acao, $acaoId) => $precos !== null
+            ? ($precos[$acaoId] ?? ['preco' => null, 'anterior' => null, 'data' => null])
+            : [
+                'preco' => $acao->ultimaCotacao?->preco,
+                'anterior' => $acao->ultimaCotacao?->fechamento_anterior,
+                'data' => $acao->ultimaCotacao?->capturado_em?->toDateString(),
+            ]);
+        $dias = $this->movimentadoNoPregao($movs, $refs);
+
         return collect(LivroCarteira::consolidar($movs))
             ->filter(fn ($pos) => $pos['quantidade'] > 0)
-            ->map(function ($pos, $acaoId) use ($acoes, $precos) {
-                $acao = $acoes[$acaoId];
-                $ref = $precos !== null
-                    ? ($precos[$acaoId] ?? ['preco' => null, 'anterior' => null])
-                    : ['preco' => $acao->ultimaCotacao?->preco, 'anterior' => $acao->ultimaCotacao?->fechamento_anterior];
+            ->map(function ($pos, $acaoId) use ($acoes, $refs, $dias) {
+                $ref = $refs[$acaoId];
+                $anterior = $ref['anterior'] !== null && (float) $ref['anterior'] > 0 ? (float) $ref['anterior'] : null;
 
                 return PosicaoResponseDTO::fromConsolidacao(
-                    $acao,
+                    $acoes[$acaoId],
                     $pos['quantidade'],
                     $pos['custo'],
                     $pos['lucro_realizado'],
                     $ref['preco'] !== null ? (float) $ref['preco'] : null,
-                    $ref['anterior'] !== null && (float) $ref['anterior'] > 0 ? (float) $ref['anterior'] : null,
+                    isset($dias[$acaoId]) ? $dias[$acaoId] + ['anterior' => $anterior] : null,
                 )->toArray();
             })
             ->sortByDesc('total_investido')
             ->values();
+    }
+
+    // Por ativo: cotas que já estavam na carteira antes do pregão de referência e o
+    // que foi comprado/vendido nele (ou depois, até a data pedida). Ativo sem data de
+    // referência não tem variação do dia.
+    private function movimentadoNoPregao(Collection $movs, Collection $refs): array
+    {
+        $dias = [];
+        foreach ($movs as $m) {
+            $pregao = $refs[$m->acao_id]['data'] ?? null;
+            if ($pregao === null) {
+                continue;
+            }
+
+            $d = &$dias[$m->acao_id];
+            $d ??= ['cotas_antes' => 0, 'compras' => 0.0, 'vendas' => 0.0];
+            $compra = $m->tipo === TipoMovimentacao::COMPRA;
+            if ($m->data->toDateString() < $pregao) {
+                $d['cotas_antes'] += $compra ? $m->quantidade : -$m->quantidade;
+            } else {
+                $d[$compra ? 'compras' : 'vendas'] += (float) $m->total;
+            }
+            unset($d);
+        }
+
+        return $dias;
     }
 
     // Percorre as movimentações do ativo na ordem do tempo e barra a primeira venda

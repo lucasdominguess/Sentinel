@@ -1,7 +1,9 @@
 {{-- Badge de variação %: cor + seta (▲/▼) + texto para leitor de tela. --}}
 @props(['pct'])
 @php
-  $trend = $pct > 0 ? 'up' : ($pct < 0 ? 'down' : 'flat');
+  // Tendência pelo valor exibido (2 casas): nada de "▼ 0,00%"
+  $exibido = round((float) $pct, 2);
+  $trend = $exibido > 0 ? 'up' : ($exibido < 0 ? 'down' : 'flat');
   $arrow = ['up' => '▲', 'down' => '▼', 'flat' => '•'][$trend];
   $sr = ['up' => 'alta de', 'down' => 'queda de', 'flat' => 'estável'][$trend];
 @endphp

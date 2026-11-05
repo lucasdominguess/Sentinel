@@ -27,6 +27,7 @@ scripts/python/
 │   └── telegram_bot.py      # envio de mensagens no Telegram (ainda não usado)
 ├── fetch_stocks.py          # ENTRADA: coleta do dia (snapshot + diário + log)
 ├── backfill_history.py      # ENTRADA: carga histórica dos fechamentos diários
+├── normalizar_precos.py     # MANUTENÇÃO: tira o ruído de float dos candles já gravados
 ├── export_sync.py           # ENTRADA: exporta acoes/movimentacoes p/ CSV (rodar no dev)
 ├── import_sync.py           # ENTRADA: importa os CSV no banco (rodar no servidor)
 ├── requirements.txt
@@ -97,6 +98,16 @@ Preenche `cotacoes_diarias` com a série diária completa. É **idempotente**
 .venv/bin/python backfill_history.py VALE3.SA --period=1y --pausa=0.5
 ```
 Referência: 43 ativos com `--period=5y` → ~45s e ~52 mil dias gravados.
+
+### Ruído de float nos candles — rodar **uma vez** após o deploy
+O `history()` do yfinance devolve float com ruído (`165.449997` em vez de `165.45`).
+O coletor já grava arredondado; este script corrige o que entrou antes. Só mexe quando
+a diferença para 2 casas é menor que 0,0001 — preço ajustado por desdobramento ou
+bonificação (casas de verdade) e o `fechamento_ajustado` ficam como estão. É idempotente:
+
+```bash
+.venv/bin/python normalizar_precos.py
+```
 
 ---
 

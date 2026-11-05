@@ -4,7 +4,7 @@
     $posicoes    Collection de arrays (PosicaoResponseDTO::toArray):
                  ['acao_id','ticker','nome','tipo','quantidade','total_investido','preco_medio',
                   'preco_atual','valor_atual','valorizacao_reais','valorizacao_pct',
-                  'lucro_realizado','variacao_dia_reais','variacao_dia_pct']
+                  'lucro_realizado','variacao_dia_reais','variacao_dia_pct','variacao_dia_base']
     $data        ?string 'Y-m-d' escolhida no calendário (null = ao vivo)
     $pregao      ?string último pregão <= $data, de onde vêm os preços
     $calendario  ['min','max','pregoes'] para o <x-date-picker>
@@ -27,9 +27,10 @@
         // Sem cotação atual, o valor atual cai no total investido (igual à tela antiga)
         $atualDe = fn ($p) => $p['valor_atual'] ?? $p['total_investido'];
 
-        $investido = (float) $posicoes->sum('total_investido');
-        $atual = (float) $posicoes->sum($atualDe);
-        $val = $atual - $investido;
+        // Somas dos valores já em centavos (os mesmos dos cards): o resumo fecha com eles
+        $investido = round((float) $posicoes->sum('total_investido'), 2);
+        $atual = round((float) $posicoes->sum($atualDe), 2);
+        $val = round($atual - $investido, 2);
         $pct = $investido > 0 ? $val / $investido * 100 : 0;
         $trend = $val > 0.004 ? 'up' : ($val < -0.004 ? 'down' : 'flat');
         $sinal = ['up' => '+', 'down' => '−', 'flat' => ''][$trend];
@@ -65,10 +66,13 @@
 
         $pesoDe = fn ($p) => $atual > 0 ? $atualDe($p) / $atual * 100 : 0;
 
-        // Variação do dia da carteira: soma das variações em R$; % sobre o valor do pregão anterior
-        $dia = (float) $posicoes->sum('variacao_dia_reais');
-        $temDia = $posicoes->whereNotNull('variacao_dia_reais')->isNotEmpty();
-        $diaPct = $temDia && $atual - $dia > 0 ? $dia / ($atual - $dia) * 100 : 0;
+        // Variação do dia da carteira: soma das variações em R$; % sobre a soma das bases
+        // (valor no pregão anterior + compras do dia) dos ativos que têm variação
+        $comDia = $posicoes->whereNotNull('variacao_dia_reais');
+        $dia = round((float) $comDia->sum('variacao_dia_reais'), 2);
+        $temDia = $comDia->isNotEmpty();
+        $baseDia = (float) $comDia->sum('variacao_dia_base');
+        $diaPct = $temDia && $baseDia > 0 ? $dia / $baseDia * 100 : 0;
         $diaTrend = $dia > 0.004 ? 'up' : ($dia < -0.004 ? 'down' : 'flat');
 
         $dataBr = fn ($d) => \Illuminate\Support\Carbon::parse($d)->format('d/m/Y');

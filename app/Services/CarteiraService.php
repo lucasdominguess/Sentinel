@@ -42,11 +42,19 @@ class CarteiraService implements CarteiraServiceInterface
     {
         $ids = $this->movimentacoes->daCarteira($data)->pluck('acao_id')->unique()->values()->all();
 
+        $porAtivo = $this->fechamentos->ultimosFechamentos($ids, $data)->groupBy('acao_id');
+        $pregao = $porAtivo->map(fn ($rows) => $rows[0]->data->toDateString())->max();
+
+        // Ativo sem fechamento no pregão da foto vale o último fechamento dele e não
+        // variou nesse pregão (a variação entre os dois fechamentos dele é de outro dia)
         $precos = [];
-        $pregao = null;
-        foreach ($this->fechamentos->ultimosFechamentos($ids, $data)->groupBy('acao_id') as $acaoId => $rows) {
-            $precos[$acaoId] = ['preco' => $rows[0]->fechamento, 'anterior' => $rows[1]->fechamento ?? null];
-            $pregao = max($pregao, $rows[0]->data->toDateString());
+        foreach ($porAtivo as $acaoId => $rows) {
+            $negociou = $rows[0]->data->toDateString() === $pregao;
+            $precos[$acaoId] = [
+                'preco' => $rows[0]->fechamento,
+                'anterior' => $negociou ? ($rows[1]->fechamento ?? null) : $rows[0]->fechamento,
+                'data' => $pregao,
+            ];
         }
 
         return [
@@ -104,6 +112,16 @@ class CarteiraService implements CarteiraServiceInterface
         $serie = $this->fechamentos->fechamentosEntre($ids, $datas[0], $ate)
             ->groupBy(fn ($f) => $f->data->toDateString());
 
+        // Pregão em andamento: o candle do dia em cotacoes_diarias chega atrasado em
+        // relação à cotação. No último ponto vale a cotação capturada nesse dia — o
+        // mesmo preço de "Meus ativos", para as duas telas fecharem.
+        $ultimoDia = end($datas);
+        $aoVivo = $acoes
+            ->filter(fn ($acao) => $acao?->ultimaCotacao?->preco !== null
+                && $acao->ultimaCotacao->capturado_em?->toDateString() === $ultimoDia)
+            ->map(fn ($acao) => (float) $acao->ultimaCotacao->preco)
+            ->all();
+
         $livro = new LivroCarteira();
         $i = 0;
         $n = $movs->count();
@@ -118,6 +136,9 @@ class CarteiraService implements CarteiraServiceInterface
         foreach ($datas as $k => $dia) {
             foreach ($serie[$dia] ?? [] as $f) {
                 $preco[$f->acao_id] = (float) $f->fechamento;
+            }
+            if ($dia === $ultimoDia) {
+                $preco = $aoVivo + $preco;
             }
 
             // No ponto de partida as movimentações são histórico, não fluxo do período
@@ -145,16 +166,17 @@ class CarteiraService implements CarteiraServiceInterface
                 unset($f);
             }
 
-            // Valor de mercado do dia; ativo ainda sem fechamento vale o custo
+            // Valor de mercado do dia; ativo ainda sem fechamento vale o custo. Cada ativo
+            // em centavos (como em "Meus ativos"), para o total fechar com a soma por ativo
             $valor = $custo = 0.0;
             $valorAtivo = [];
             foreach ($livro->posicoes() as $acaoId => $p) {
                 $v = $p['quantidade'] > 0
-                    ? (isset($preco[$acaoId]) ? $p['quantidade'] * $preco[$acaoId] : $p['custo'])
+                    ? round(isset($preco[$acaoId]) ? $p['quantidade'] * $preco[$acaoId] : $p['custo'], 2)
                     : 0.0;
                 $valorAtivo[$acaoId] = $v;
                 $valor += $v;
-                $custo += $p['custo'];
+                $custo += round($p['custo'], 2);
             }
 
             if ($k === 0 && $base !== null) {

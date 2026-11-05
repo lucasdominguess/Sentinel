@@ -76,7 +76,7 @@
             </label>
             <label class="calc-field">
                 <span class="calc-label">Dividendo/cota (R$)</span>
-                <input class="calc-dividendo" type="number" step="0.01" placeholder="0.00" inputmode="decimal">
+                <input class="calc-dividendo" type="number" step="any" placeholder="0.00" inputmode="decimal">
             </label>
             <label class="calc-field calc-field--sm">
                 <span class="calc-label">% Paga</span>

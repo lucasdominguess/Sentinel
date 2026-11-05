@@ -278,3 +278,39 @@ def finalizar_coleta(coleta_id: int | None, ativos_ok: int, ativos_falha: int,
         logger.error("Não foi possível finalizar a coleta %s: %s", coleta_id, e)
     finally:
         conn.close()
+
+
+# ----------------------------------------------------------------------
+# Manutenção: ruído de float nos candles já gravados
+# ----------------------------------------------------------------------
+# Mesma regra do history_service._preco: só arredonda para 2 casas quando a
+# diferença é ruído (< 0.0001). Preço ajustado por desdobramento fica intacto.
+# fechamento_ajustado não entra: é ajustado por provento e tem casas de verdade.
+_NORMALIZAR_DIARIAS = """
+    UPDATE cotacoes_diarias SET
+        abertura   = CASE WHEN abs(abertura - round(abertura, 2)) < 0.0001 THEN round(abertura, 2) ELSE abertura END,
+        maxima     = CASE WHEN abs(maxima - round(maxima, 2)) < 0.0001 THEN round(maxima, 2) ELSE maxima END,
+        minima     = CASE WHEN abs(minima - round(minima, 2)) < 0.0001 THEN round(minima, 2) ELSE minima END,
+        fechamento = CASE WHEN abs(fechamento - round(fechamento, 2)) < 0.0001 THEN round(fechamento, 2) ELSE fechamento END,
+        updated_at = now()
+    WHERE (abertura   <> round(abertura, 2)   AND abs(abertura - round(abertura, 2)) < 0.0001)
+       OR (maxima     <> round(maxima, 2)     AND abs(maxima - round(maxima, 2)) < 0.0001)
+       OR (minima     <> round(minima, 2)     AND abs(minima - round(minima, 2)) < 0.0001)
+       OR (fechamento <> round(fechamento, 2) AND abs(fechamento - round(fechamento, 2)) < 0.0001);
+"""
+
+
+def normalizar_precos_diarios() -> int:
+    """Arredonda o ruído de float de cotacoes_diarias. Retorna as linhas alteradas."""
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(_NORMALIZAR_DIARIAS)
+            alteradas = cur.rowcount
+        conn.commit()
+        return alteradas
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()

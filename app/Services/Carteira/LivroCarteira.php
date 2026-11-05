@@ -56,8 +56,11 @@ class LivroCarteira
             return 0.0;
         }
 
+        // Realizado sobre o total da nota (o mesmo valor que a evolução conta como
+        // resgate), não sobre preço × quantidade sem arredondar
         $precoMedio = $p['quantidade'] > 0 ? $p['custo'] / $p['quantidade'] : 0.0;
-        $realizado = ((float) $m->preco - $precoMedio) * $m->quantidade;
+        $recebido = $m->total !== null ? (float) $m->total : (float) $m->preco * $m->quantidade;
+        $realizado = $recebido - $precoMedio * $m->quantidade;
 
         $p['lucro_realizado'] += $realizado;
         $p['custo'] -= $precoMedio * $m->quantidade;

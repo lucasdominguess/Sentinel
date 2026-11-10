@@ -12,7 +12,7 @@ return new class extends Migration
     {
         DB::statement('
             UPDATE movimentacoes
-            SET total = round(preco * quantidade, 2), updated_at = now()
+            SET total = round(preco * quantidade, 2), updated_at = CURRENT_TIMESTAMP
             WHERE total <> round(preco * quantidade, 2)
         ');
     }

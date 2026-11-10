@@ -9,23 +9,27 @@ set -e
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-echo "==> 1/6 Atualizando código (git pull)"
+echo "==> 1/7 Atualizando código (git pull)"
 git pull origin main
 
-echo "==> 2/6 Dependências PHP (composer install)"
+echo "==> 2/7 Dependências PHP (composer install)"
 composer install --no-interaction --prefer-dist
 
-echo "==> 3/6 Migrations (php artisan migrate)"
+echo "==> 3/7 Migrations (php artisan migrate)"
 php artisan migrate --force
 
-echo "==> 4/6 Dependências do front (npm install)"
+echo "==> 4/7 Dependências do front (npm install)"
 npm install
 
-echo "==> 5/6 Build do front (npm run build)"
+echo "==> 5/7 Build do front (npm run build)"
 npm run build
 
-echo "==> 6/6 Limpando caches (optimize:clear)"
+echo "==> 6/7 Limpando caches (optimize:clear)"
 php artisan optimize:clear
+
+echo "==> 7/7 Atualizando dependências Python (pip install -r scripts/python/requirements.txt)"
+pip install -r scripts/python/requirements.txt
+
 
 echo ""
 echo "✅ Deploy concluído."

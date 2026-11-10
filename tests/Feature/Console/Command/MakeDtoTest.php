@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Console\Command;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Console\Command;

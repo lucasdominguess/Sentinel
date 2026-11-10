@@ -6,3 +6,7 @@ yfinance>=0.2.61
 python-dotenv>=1.1.0
 psycopg2-binary>=2.9.9     # conexão com o PostgreSQL (database/connection.py)
 pyTelegramBotAPI>=4.24.0   # bot do Telegram (services/telegram_bot.py)
+
+# Minimos seguros para dependencias transitivas identificadas pelo osv-scanner.
+aiohttp>=3.14.5
+idna>=3.20
